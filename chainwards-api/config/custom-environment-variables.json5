@@ -1,0 +1,5 @@
+{
+  jwtSecret: 'JWT_SECRET',
+  dbUrl: 'DB_URL',
+  goerli_api_key: 'GOERLI_API_KEY'
+}

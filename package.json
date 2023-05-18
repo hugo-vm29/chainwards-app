@@ -1,0 +1,24 @@
+{
+  "name": "chainwards",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "lint": "eslint ./block-transcript/src --ext .jsx,.js,.ts,.tsx && eslint ./block-transcript-api/src --ext .jsx,.js,.ts,.tsx",
+    "lint:fix": "eslint ./block-transcript/src --ext .jsx,.js,.ts,.tsx --fix && eslint ./block-transcript-api/src --ext .jsx,.js,.ts,.tsx --fix"
+  },
+  "dependencies": {
+    "react": "^18.2.0"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.57.1",
+    "@typescript-eslint/parser": "^5.57.1",
+    "eslint": "^8.37.0",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-jsx-a11y": "^6.7.1",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-react": "^7.32.2",
+    "prettier": "^2.8.7",
+    "typescript": "^4.9.3"
+  }
+}

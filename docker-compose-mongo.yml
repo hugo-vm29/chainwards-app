@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+
+  chainwards-mongo-local:
+    container_name: mongo
+    image: mongo:latest
+    volumes:
+      - ./mongo:/data/db
+    networks:
+      - chainwards
+    ports:
+      - 27017:27017
+
+networks:
+  chainwards:
+    driver: bridge

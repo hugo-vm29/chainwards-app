@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  chainwards-ui:
+    build:
+      context: ./chainwards-ui
+      dockerfile: dev.Dockerfile
+    stdin_open: true
+    ports:
+      - '5173:5173'
+    networks:
+      - chainwards
+    volumes:
+      - ./chainwards-ui/src:/app/src:delegated
+      - ./chainwards-ui/public:/app/public:delegated
+      - ./chainwards-ui/tsconfig.json:/app/tsconfig.json:delegated
+      - ./chainwards-ui/tsconfig.node.json:/app/tsconfig.node.json:delegated
+      - ./chainwards-ui/vite.config.ts:/app/vite.config.ts:delegated
+
+  chainwards-api:
+    build:
+      context: ./chainwards-api
+      dockerfile: dev.Dockerfile
+    command: ['npm', 'run', 'dev']
+    environment:
+      GOERLI_API_KEY: '671PtQ13VWj_XVlnrf5xRTqtBEyTKHJU'
+      # ENV: 'local'
+    ports:
+      - '8080:8080'
+    networks:
+      - chainwards
+    volumes:
+      - ./chainwards-api/build:/app/build:delegated
+
+  chainwards-api-watch:
+    build:
+      context: ./chainwards-api
+      dockerfile: dev.Dockerfile
+    command: ['npm', 'run', 'build:watch']
+    volumes:
+      - ./chainwards-api/src/:/app/src
+      - ./chainwards-api/build/:/app/build
+    networks:
+      - chainwards
+    logging:
+      options:
+        max-size: 10m
+
+  # mongo-local:
+  #   container_name: mongo
+  #   image: mongo:latest
+  #   volumes:
+  #     - ./mongo:/data/db
+  #   ports:
+  #     - 27017:27017
+
+networks:
+  chainwards:
+    driver: bridge
