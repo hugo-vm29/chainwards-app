@@ -19,20 +19,17 @@ const styles = {
 };
 
 const Loader: FunctionComponent<LoaderProps> = ({ loading, sx, ...props }) => {
-  
-  return (
-    loading ? (
-      <Box
-        sx={[
-          styles.root,
-          { display: loading ? 'flex' : 'none' },
-          ...(Array.isArray(sx) ? sx : [sx]),
-        ]}
-      >
-        <CircularProgress size={51} {...props} />
-      </Box>
-    )
-    :
+  return loading ? (
+    <Box
+      sx={[
+        styles.root,
+        { display: loading ? 'flex' : 'none' },
+        ...(Array.isArray(sx) ? sx : [sx]),
+      ]}
+    >
+      <CircularProgress size={51} {...props} />
+    </Box>
+  ) : (
     <></>
   );
 };
@@ -40,17 +37,18 @@ const Loader: FunctionComponent<LoaderProps> = ({ loading, sx, ...props }) => {
 const propTypes = {
   loading: PropTypes.bool.isRequired,
   sx: PropTypes.oneOfType([
-    PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.bool])),
+    PropTypes.arrayOf(
+      PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.bool]),
+    ),
     PropTypes.func,
     PropTypes.object,
   ]),
 };
 
 type LoaderProps = PropTypes.InferProps<typeof propTypes>;
-Loader.propTypes = propTypes
+Loader.propTypes = propTypes;
 Loader.defaultProps = {
   sx: {},
 };
-
 
 export default Loader;

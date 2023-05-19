@@ -3,8 +3,8 @@
   "private": true,
   "version": "0.0.0",
   "scripts": {
-    "lint": "eslint ./block-transcript/src --ext .jsx,.js,.ts,.tsx && eslint ./block-transcript-api/src --ext .jsx,.js,.ts,.tsx",
-    "lint:fix": "eslint ./block-transcript/src --ext .jsx,.js,.ts,.tsx --fix && eslint ./block-transcript-api/src --ext .jsx,.js,.ts,.tsx --fix"
+    "lint": "eslint ./chainwards-api/src --ext .jsx,.js,.ts,.tsx && eslint ./chainwards-ui/src --ext .jsx,.js,.ts,.tsx",
+    "lint:fix": "eslint ./chainwards-api/src --ext .jsx,.js,.ts,.tsx --fix && eslint ./chainwards-ui/src --ext .jsx,.js,.ts,.tsx --fix"
   },
   "dependencies": {
     "react": "^18.2.0"

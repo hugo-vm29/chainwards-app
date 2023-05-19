@@ -24,6 +24,7 @@ services:
     command: ['npm', 'run', 'dev']
     environment:
       GOERLI_API_KEY: '671PtQ13VWj_XVlnrf5xRTqtBEyTKHJU'
+      MUMBAI_API_KEY: 'GsnmMirup8QVC8LzwFyiOmbXm6uq5oC4'
       # ENV: 'local'
     ports:
       - '8080:8080'

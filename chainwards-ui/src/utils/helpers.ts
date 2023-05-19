@@ -1,7 +1,17 @@
-
 export const isChainValid = (chainId: number) => {
-  if(chainId == 80001  || chainId == 137) return true;
+  if (chainId == 80001 || chainId == 5) return true;
   else false;
+};
+
+export const getNetworkName = (chainId: number) => {
+  let networkName = '';
+
+  if (chainId == 5) {
+    networkName = 'Goerli';
+  } else if (chainId == 80001) {
+    networkName = 'Polygon Mumbai';
+  }
+  return networkName;
 };
 
 export const formatAddress = (address: string) => {
@@ -13,9 +23,8 @@ export const formatAddress = (address: string) => {
   }
 };
 
-export const formatDate = (date: Date)=> {
+export const formatDate = (date: Date) => {
   try {
-
     if (!date) return '';
 
     const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;

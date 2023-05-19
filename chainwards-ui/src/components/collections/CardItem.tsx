@@ -8,31 +8,37 @@ import Typography from '@mui/material/Typography';
 
 const styles = {
   root: {
-    marginBottom: 2 
+    marginBottom: 2,
   },
   label: {
     color: '#707070',
     marginBottom: 0.5,
   },
   icon: {
-    fontSize: 18
-  }
+    fontSize: 18,
+  },
 };
 
-const CardItem: FunctionComponent<CardItemProps> = ({ label, data, link ,tooltipText }) => {
-  
+const CardItem: FunctionComponent<CardItemProps> = ({
+  label,
+  data,
+  link,
+  tooltipText,
+}) => {
   return (
     <Box component="div" sx={styles.root}>
       <Typography variant="body2" sx={styles.label}>
         {label}
       </Typography>
       <Box display="flex" component="div" alignItems="normal">
-        <Typography sx={{ mr: 1}}>{data}</Typography>
-        { link && link !== "" &&
-          <Tooltip title={tooltipText} arrow placement='right'>
-            <Link href={link}><LaunchIcon sx={styles.icon} /></Link>
+        <Typography sx={{ mr: 1 }}>{data}</Typography>
+        {link && link !== '' && (
+          <Tooltip title={tooltipText} arrow placement="right">
+            <Link href={link}>
+              <LaunchIcon sx={styles.icon} />
+            </Link>
           </Tooltip>
-        }
+        )}
       </Box>
     </Box>
   );
@@ -42,16 +48,14 @@ const propTypes = {
   label: PropTypes.string.isRequired,
   data: PropTypes.string.isRequired,
   link: PropTypes.string,
-  tooltipText : PropTypes.string
+  tooltipText: PropTypes.string,
 };
 
 type CardItemProps = PropTypes.InferProps<typeof propTypes>;
-  
+
 CardItem.defaultProps = {
-  link: "",
-  tooltipText : ""
+  link: '',
+  tooltipText: '',
 };
-
-
 
 export default CardItem;

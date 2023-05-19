@@ -10,18 +10,29 @@ import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import { FunctionComponent } from 'react';
 
-const Modal: FunctionComponent<ModalProps> = ({ open, title, handleClose, actions, children, ...props }) => {
+
+/* eslint-disable @typescript-eslint/no-empty-function */
+
+const Modal: FunctionComponent<ModalProps> = ({
+  open,
+  title,
+  handleClose,
+  actions,
+  children,
+  ...props
+}) => {
   
-  const theme:any = useTheme();
   let leftActions: any = [];
   let rightActions: any[] = [];
 
-  if(actions) {
-    leftActions = actions.filter(x => x && x.position === 'left');
-    rightActions = actions.filter(x => x && x.position === 'right');
+  if (actions) {
+    leftActions = actions.filter((x) => x && x.position === 'left');
+    rightActions = actions.filter((x) => x && x.position === 'right');
   }
 
-  const fullScreen = useMediaQuery( (customTheme: any) => customTheme.breakpoints.down('md'));
+  const fullScreen = useMediaQuery((customTheme: any) =>
+    customTheme.breakpoints.down('md'),
+  );
 
   return (
     <Dialog
@@ -39,7 +50,9 @@ const Modal: FunctionComponent<ModalProps> = ({ open, title, handleClose, action
             fontSize: '1.5rem',
           },
         }}
-      >{title}</DialogTitle>
+      >
+        {title}
+      </DialogTitle>
       <DialogContent>{children}</DialogContent>
       {actions && actions.length > 0 && (
         <DialogActions
@@ -53,17 +66,12 @@ const Modal: FunctionComponent<ModalProps> = ({ open, title, handleClose, action
             },
           }}
         >
-          {leftActions.map( (item: any) => {
-            const { name, customStyles, ...btnProps } = item;
+          {leftActions.map((item: any) => {
+            const { name, ...btnProps } = item;
             return (
               <Tooltip title={item.tooltip ? item.tooltip : ''} key={name}>
                 <span>
-                  <Button
-                    sx={{
-                     
-                    }}
-                    {...btnProps}
-                  >
+                  <Button sx={{}} {...btnProps}>
                     {name}
                   </Button>
                 </span>
@@ -79,16 +87,10 @@ const Modal: FunctionComponent<ModalProps> = ({ open, title, handleClose, action
               }}
             />
           )}
-          {rightActions.map(item => {
+          {rightActions.map((item) => {
             const { name, ...btnProps } = item;
             return (
-              <Button
-                key={name}
-                sx={{
-
-                }}
-                {...btnProps}
-              >
+              <Button key={name} sx={{}} {...btnProps}>
                 {name}
               </Button>
             );
@@ -98,7 +100,6 @@ const Modal: FunctionComponent<ModalProps> = ({ open, title, handleClose, action
     </Dialog>
   );
 };
-
 
 const propTypes = {
   open: PropTypes.bool.isRequired,
@@ -113,13 +114,13 @@ const propTypes = {
       onClick: PropTypes.func,
       variant: PropTypes.string,
       size: PropTypes.string,
-      disabled: PropTypes.bool
+      disabled: PropTypes.bool,
     }),
   ),
 };
 
 type ModalProps = PropTypes.InferProps<typeof propTypes>;
-Modal.propTypes = propTypes
+Modal.propTypes = propTypes;
 
 Modal.defaultProps = {
   open: false,

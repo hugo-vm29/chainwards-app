@@ -1,5 +1,5 @@
 /* eslint-disable no-nested-ternary */
-import { FunctionComponent, useState , useEffect} from 'react';
+import { FunctionComponent, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
@@ -19,22 +19,21 @@ import { TransitionGroup } from 'react-transition-group';
 import Loader from '../shared/Loader';
 
 export type FormValues = {
-  input_name: string,
-  input_description: string
-}
+  input_name: string;
+  input_description: string;
+};
 
 type RenderItemOptions = {
   item: string;
   handleRemoveItem: (item: string) => void;
-}
-
+};
 
 const styles = {
-  listItemIcon : {
+  listItemIcon: {
     minWidth: 0,
-    marginRight: '8px'
-  }
-}
+    marginRight: '8px',
+  },
+};
 
 const IssuersList: FunctionComponent<IssuersListProps> = ({
   openModal,
@@ -42,10 +41,9 @@ const IssuersList: FunctionComponent<IssuersListProps> = ({
   issuersList,
   onSubmitData,
   submittingData,
-}) => { 
-
-  const [ currentList, setCurrentList] = useState<string[]>(issuersList || []);
-  const [ inputNewAddress, setInputNewAddress ] = useState('');
+}) => {
+  const [currentList, setCurrentList] = useState<string[]>(issuersList || []);
+  const [inputNewAddress, setInputNewAddress] = useState('');
 
   useEffect(() => {
     setCurrentList(issuersList || []);
@@ -54,10 +52,10 @@ const IssuersList: FunctionComponent<IssuersListProps> = ({
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = event.target.value;
     setInputNewAddress(inputValue);
-  }
+  };
 
   const handleAddItem = () => {
-    if(inputNewAddress !== ""){
+    if (inputNewAddress !== '') {
       setCurrentList((prev) => [inputNewAddress, ...prev]);
       setInputNewAddress('');
     }
@@ -68,7 +66,6 @@ const IssuersList: FunctionComponent<IssuersListProps> = ({
   };
 
   const renderItem = ({ item, handleRemoveItem }: RenderItemOptions) => {
-   
     return (
       <ListItem
         secondaryAction={
@@ -85,12 +82,10 @@ const IssuersList: FunctionComponent<IssuersListProps> = ({
         <ListItemIcon sx={styles.listItemIcon}>
           <AccountBalanceWalletIcon />
         </ListItemIcon>
-        <ListItemText
-          primary={item}
-        />
+        <ListItemText primary={item} />
       </ListItem>
     );
-  }
+  };
 
   return (
     <Modal
@@ -120,13 +115,15 @@ const IssuersList: FunctionComponent<IssuersListProps> = ({
             onSubmitData(currentList);
           },
           disabled: submittingData,
-        }
+        },
       ]}
     >
-      
       <Loader loading={submittingData || false} />
-      <Typography sx={{mb: 2}}> Add or remove accounts that are allowed to issue (create) NFTs on this collection</Typography>
-      
+      <Typography sx={{ mb: 2 }}>
+        {' '}
+        Add or remove accounts that are allowed to issue (create) NFTs on this collection
+      </Typography>
+
       <Box display="flex" sx={{ color: '#D68100', marginBottom: 1 }}>
         <WarningAmberIcon sx={{ fontSize: '1.3rem', marginRight: 0.5 }} />
         <Typography sx={{ fontSize: '0.875rem' }}>
@@ -134,13 +131,11 @@ const IssuersList: FunctionComponent<IssuersListProps> = ({
         </Typography>
       </Box>
 
-      <Box display="flex"   sx={{ mt: 1 }}>
-        <List >
+      <Box display="flex" sx={{ mt: 1 }}>
+        <List>
           <TransitionGroup>
             {currentList.map((item) => (
-              <Collapse key={item}>
-                {renderItem({ item, handleRemoveItem })}
-              </Collapse>
+              <Collapse key={item}>{renderItem({ item, handleRemoveItem })}</Collapse>
             ))}
           </TransitionGroup>
           <ListItem
@@ -159,16 +154,15 @@ const IssuersList: FunctionComponent<IssuersListProps> = ({
               fullWidth={true}
               name="input_address"
               label="new address"
-              variant="outlined" 
+              variant="outlined"
               value={inputNewAddress}
-              margin='normal'
+              margin="normal"
               onChange={handleInputChange}
-              size='small'
+              size="small"
             />
           </ListItem>
         </List>
       </Box>
-
     </Modal>
   );
 };
@@ -182,7 +176,7 @@ const propTypes = {
 };
 
 type IssuersListProps = PropTypes.InferProps<typeof propTypes>;
-IssuersList.propTypes = propTypes
+IssuersList.propTypes = propTypes;
 
 IssuersList.defaultProps = {
   issuersList: [],

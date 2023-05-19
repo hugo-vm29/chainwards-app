@@ -48,7 +48,7 @@ router.post('/', (req, res, next) => __awaiter(void 0, void 0, void 0, function*
 router.get('/findByWallet/:walletAddr', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { walletAddr } = req.params;
-        const collectonData = yield db_1.default
+        const accountsData = yield db_1.default
             .collection('accounts')
             .findOne({ 'wallet.address': walletAddr }, {
             projection: {
@@ -57,9 +57,9 @@ router.get('/findByWallet/:walletAddr', (req, res, next) => __awaiter(void 0, vo
                 'wallet.address': 1
             },
         });
-        if (!collectonData)
+        if (!accountsData)
             return res.status(404).send({ error: "No account found" });
-        return res.json(collectonData);
+        return res.json(accountsData);
     }
     catch (err) {
         console.error(`Error: ${err}`);

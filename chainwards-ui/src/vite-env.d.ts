@@ -1,6 +1,6 @@
 /// <reference types="vite/client" />
 /// <reference types="react-scripts" />
-import { ExternalProvider } from "@ethersproject/providers";
+import { ExternalProvider } from '@ethersproject/providers';
 
 declare global {
   interface Window {

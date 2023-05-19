@@ -25,11 +25,14 @@ const StyledTextField = styled(TextField)({
   },
 });
 
-const SearchField: FunctionComponent<SearchFieldProps>  = ({ searchText, handleSearch, placeholder }) => {
-  
+const SearchField: FunctionComponent<SearchFieldProps> = ({
+  searchText,
+  handleSearch,
+  placeholder,
+}) => {
   const [timer, setTimer] = useState<any>(null);
 
-  const handleTextChange = (event:any) => {
+  const handleTextChange = (event: any) => {
     clearTimeout(timer);
     const newTimer = setTimeout(() => {
       handleSearch(event.target.value);
@@ -47,7 +50,7 @@ const SearchField: FunctionComponent<SearchFieldProps>  = ({ searchText, handleS
       sx={{
         backgroundColor: '#FAFAFA',
         borderRadius: '4px',
-        width: '100%'
+        width: '100%',
       }}
       InputProps={{
         endAdornment: (
@@ -60,7 +63,6 @@ const SearchField: FunctionComponent<SearchFieldProps>  = ({ searchText, handleS
   );
 };
 
-
 const propTypes = {
   searchText: PropTypes.string,
   handleSearch: PropTypes.func.isRequired,
@@ -68,12 +70,11 @@ const propTypes = {
 };
 
 type SearchFieldProps = PropTypes.InferProps<typeof propTypes>;
-SearchField.propTypes = propTypes
+SearchField.propTypes = propTypes;
 
 SearchField.defaultProps = {
   searchText: '',
   placeholder: 'search',
 };
-
 
 export default SearchField;

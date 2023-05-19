@@ -1,4 +1,4 @@
-import { useState , useCallback, useEffect} from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { ethers } from 'ethers';
 import { FunctionComponent } from 'react';
@@ -15,17 +15,17 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import ModeEditOutlineOutlinedIcon from '@mui/icons-material/ModeEditOutlineOutlined';
 import PauseCircleOutlineIcon from '@mui/icons-material/PauseCircleOutline';
 import AcUnitIcon from '@mui/icons-material/AcUnit';
-import IssuersList from './IssuersList'
-import {getIssuersList, changeCollectionIssuers} from  '../../utils/fetch';
+import IssuersList from './IssuersList';
+import { getIssuersList, changeCollectionIssuers } from '../../utils/fetch';
 import RewardsContract from '../../contracts/Rewards.json';
-import {ReqBodyIssuers} from '../../utils/types';
+import { ReqBodyIssuers } from '../../utils/types';
 
 const styles = {
   cardRoot: {
-    mt: 8, 
-    mx: 2, 
-    background: "#fafafa 0% 0% no-repeat padding-box", 
-    boxShadow: "0px 3px 6px #00000029"
+    mt: 8,
+    mx: 2,
+    background: '#fafafa 0% 0% no-repeat padding-box',
+    boxShadow: '0px 3px 6px #00000029',
   },
   icons: {
     fontSize: '1.125rem',
@@ -34,14 +34,13 @@ const styles = {
 };
 
 const AdminActions: FunctionComponent<AdminActionsProps> = ({ collectionId }) => {
-  
-  const [anchorEl, setAnchorEl] = useState<EventTarget & Element | null>(null);
+  const [anchorEl, setAnchorEl] = useState<(EventTarget & Element) | null>(null);
   const open = Boolean(anchorEl);
 
-  const [openIssuersModal,setOpenIssuersModal] = useState(false);
+  const [openIssuersModal, setOpenIssuersModal] = useState(false);
 
-  const [issuersList,setIssuersList] = useState<string[]>([]);
-  const [submitIssuersChange,setSubmitIssuersChange] = useState(false);
+  const [issuersList, setIssuersList] = useState<string[]>([]);
+  const [submitIssuersChange, setSubmitIssuersChange] = useState(false);
 
   const handleMenuButton = (event: React.SyntheticEvent) => {
     setAnchorEl(event.currentTarget);
@@ -58,59 +57,53 @@ const AdminActions: FunctionComponent<AdminActionsProps> = ({ collectionId }) =>
 
   const onCloseIssuersModal = () => {
     setOpenIssuersModal(false);
-  }
+  };
 
-  const getCurrentIssuersList = useCallback(async (id:string) => {
-    try {
-      if(collectionId){
-        const response = await getIssuersList(id);
-        if (response.status === 200) {
-          //console.log("response", response.data);
-          setIssuersList(response.data.issuers);
+  const getCurrentIssuersList = useCallback(
+    async (id: string) => {
+      try {
+        if (collectionId) {
+          const response = await getIssuersList(id);
+          if (response.status === 200) {
+            //console.log("response", response.data);
+            setIssuersList(response.data.issuers);
+          }
         }
+      } catch (err) {
+        console.error('Error loading data', 'error');
       }
-    } catch (err) {
-      console.error('Error loading data', 'error');
-    }
-  }, [collectionId]);
+    },
+    [collectionId],
+  );
 
   useEffect(() => {
     getCurrentIssuersList(collectionId);
   }, [collectionId]);
 
+  const onSubmitChangeIssuers = async (newList: string[]) => {
+    console.log('on submit ', newList);
 
-  const onSubmitChangeIssuers = async ( newList: string []) => {
-    
-    console.log("on submit ", newList);
-
-    try{
-
+    try {
       // setSubmitIssuersChange(true);
-    
       // // const provider = new ethers.BrowserProvider(window.ethereum);
       // // const signer = await provider.getSigner();
       // // const contractInstance = new ethers.Contract("",RewardsContract.abi, signer);
       // // let transaction = await contractInstance.addTokenIssuersBatch(newList);
       // // await transaction.wait();
-
       // const body: ReqBodyIssuers = {
       //   collection_id: collectionId,
       //   new_list: newList
       // }
-
       // const apiResponse = await changeCollectionIssuers(body);
       // console.log("api response : ", apiResponse.data);
-
       // setIssuersList(newList);
       // setOpenIssuersModal(false);
       // setSubmitIssuersChange(false);
-
-    }catch(err){
-      console.log("ERROR", err);
+    } catch (err) {
+      console.log('ERROR', err);
     }
+  };
 
-  }
-  
   return (
     <>
       <Button
@@ -151,7 +144,7 @@ const AdminActions: FunctionComponent<AdminActionsProps> = ({ collectionId }) =>
           <ListItemText>Disable minting</ListItemText>
         </MenuItem>  */}
       </Menu>
-      <IssuersList 
+      <IssuersList
         openModal={openIssuersModal}
         onClose={onCloseIssuersModal}
         issuersList={issuersList}
@@ -159,19 +152,14 @@ const AdminActions: FunctionComponent<AdminActionsProps> = ({ collectionId }) =>
       />
     </>
   );
-
 };
 
 const propTypes = {
-  collectionId: PropTypes.string.isRequired
+  collectionId: PropTypes.string.isRequired,
 };
 
 type AdminActionsProps = PropTypes.InferProps<typeof propTypes>;
-  
-AdminActions.defaultProps = {
- 
-};
 
-
+AdminActions.defaultProps = {};
 
 export default AdminActions;

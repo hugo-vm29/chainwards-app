@@ -1,10 +1,8 @@
-import { FunctionComponent, useState } from 'react';
 import { Routes, Route } from 'react-router-dom';
-import PropTypes from 'prop-types';
 import PageLayout from './components/layout/PageLayout';
 import Dashboard from './pages/Dashboard';
 import Landing from './pages/Landing';
-import Issue from './pages/Issue';
+import Collections from './pages/Collections';
 import Claim from './pages/Claim';
 import MyProfile from './pages/Profile';
 import CollectionDetail from './pages/CollectionDetail';
@@ -20,7 +18,7 @@ function App() {
         <Route path="/profile" element={<MyProfile />} />
         <Route path="/claim" element={<Claim />} />
         <Route path="/home" element={<Dashboard />} />
-        <Route path="/issue" element={<Issue />} />
+        <Route path="/collections" element={<Collections />} />
         <Route path="/collection/:collectionId/details" element={<CollectionDetail />} />
       </Routes>
     </PageLayout>

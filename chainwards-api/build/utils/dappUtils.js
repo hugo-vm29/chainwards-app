@@ -20,7 +20,7 @@ let provider = null;
 const createWallet = () => {
     const newWallet = ethers_1.ethers.Wallet.createRandom();
     const walletData = {
-        address: newWallet.address,
+        address: newWallet.address.toLocaleLowerCase(),
         signingKey: {
             publicKey: newWallet.publicKey,
             privateKey: newWallet.privateKey,
