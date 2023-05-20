@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import { useTheme } from '@emotion/react';
 import Dialog from '@mui/material/Dialog';
 import Tooltip from '@mui/material/Tooltip';
 import DialogActions from '@mui/material/DialogActions';
@@ -9,7 +8,6 @@ import DialogTitle from '@mui/material/DialogTitle';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import { FunctionComponent } from 'react';
-
 
 /* eslint-disable @typescript-eslint/no-empty-function */
 
@@ -21,7 +19,6 @@ const Modal: FunctionComponent<ModalProps> = ({
   children,
   ...props
 }) => {
-  
   let leftActions: any = [];
   let rightActions: any[] = [];
 

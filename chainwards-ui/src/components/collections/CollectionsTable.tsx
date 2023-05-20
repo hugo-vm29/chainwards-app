@@ -16,6 +16,8 @@ import { formatAddress, formatDate, getNetworkName } from '../../utils/helpers';
 import PolygonIcon from '../../assets/PolygonIcon';
 import EthereumIcon from '../../assets/EthereumIcon';
 
+/* eslint-disable jsx-a11y/anchor-is-valid, @typescript-eslint/no-empty-function */
+
 const styles = {
   statusIcon: (status: string) => [
     status === 'failed' && { color: '#E60000 !important' },

@@ -4,18 +4,13 @@ import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import Container from '@mui/material/Container';
 import { useParams } from 'react-router-dom';
-import { getSingleCollectionInfo, getIssuersList } from '../utils/fetch';
+import { getSingleCollectionInfo } from '../utils/fetch';
 import Loader from '../components/shared/Loader';
 import { CollectionInfoType } from '../utils/types';
 import DetailsCard from '../components/collections/DetailsCard';
 import SearchField from '../components/collections/SearchField';
 
-const styles = {
-  label: {
-    color: '#707070',
-    marginBottom: 0.5,
-  },
-};
+/* eslint-disable  @typescript-eslint/no-empty-function */
 
 const CollectionDetail = () => {
   const { collectionId } = useParams();

@@ -20,24 +20,23 @@ const router = express_1.default.Router({ mergeParams: true });
 router.post('/', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { username } = req.body;
-        //const hashedPass = await bcrypt.hash( password, 10);
-        return res.json({
-            id: "'646441aacb06612ac957d02f",
-            address: "0xb8790386c88565e681b708bc227B76Cd0733c603",
-            signingKey: {
-                privateKey: "0xea90d99fae1db2935aca86a2b0f7b9efaa76b4c278f5ce2fd56dc8edcc35e178",
-                publicKey: "0x0250a25665c4489ae3fe464d3d08f3c69625e12560ea0b86aae521603e44621101"
-            }
-        });
+        // return res.json({
+        //   id: "'646441aacb06612ac957d02f",
+        //   address: '0xb8790386c88565e681b708bc227B76Cd0733c603',
+        //   signingKey: {
+        //     privateKey: '0xea90d99fae1db2935aca86a2b0f7b9efaa76b4c278f5ce2fd56dc8edcc35e178',
+        //     publicKey: '0x0250a25665c4489ae3fe464d3d08f3c69625e12560ea0b86aae521603e44621101',
+        //   },
+        // });
         const wallet = (0, dappUtils_1.createWallet)();
         const newUser = {
             displayName: username,
-            name: "",
-            lastName: "",
-            wallet: Object.assign({}, wallet)
+            name: '',
+            lastName: '',
+            wallet: Object.assign({}, wallet),
         };
         const dbResponse = yield db_1.default.collection('accounts').insertOne(newUser);
-        console.log("newUser", newUser);
+        console.log('newUser', newUser);
         return res.json(Object.assign({ id: dbResponse.insertedId }, wallet));
     }
     catch (err) {
@@ -48,17 +47,15 @@ router.post('/', (req, res, next) => __awaiter(void 0, void 0, void 0, function*
 router.get('/findByWallet/:walletAddr', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { walletAddr } = req.params;
-        const accountsData = yield db_1.default
-            .collection('accounts')
-            .findOne({ 'wallet.address': walletAddr }, {
+        const accountsData = yield db_1.default.collection('accounts').findOne({ 'wallet.address': walletAddr }, {
             projection: {
                 _id: 1,
                 name: 1,
-                'wallet.address': 1
+                'wallet.address': 1,
             },
         });
         if (!accountsData)
-            return res.status(404).send({ error: "No account found" });
+            return res.status(404).send({ error: 'No account found' });
         return res.json(accountsData);
     }
     catch (err) {

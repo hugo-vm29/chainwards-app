@@ -72,8 +72,6 @@ const NewCollectionModal: FunctionComponent<NewCollectionModalProps> = ({
       <Box>
         <Loader loading={submittingData || false} />
 
-        {/* { networkName !== "" ? `${networkName} network`: "blockchain represented by a smart contract." }  */}
-
         <Typography sx={{ mb: 2 }}>
           Complete the information below to create a new NTF collection on the
           {networkName !== '' ? (
@@ -88,7 +86,8 @@ const NewCollectionModal: FunctionComponent<NewCollectionModalProps> = ({
         <Box display="flex" sx={{ color: '#D68100', marginBottom: 1 }}>
           <WarningAmberIcon sx={{ fontSize: '1.3rem', marginRight: 0.5 }} />
           <Typography sx={{ fontSize: '0.875rem' }}>
-            This operation involves a blockchain transaction with it's associated costs so please make sure to have enough funds on your wallet.
+            This operation involves a blockchain transaction with associated costs so
+            please make sure to have enough funds on your wallet.
           </Typography>
         </Box>
 

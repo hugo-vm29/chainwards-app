@@ -6,11 +6,8 @@ import Collections from './pages/Collections';
 import Claim from './pages/Claim';
 import MyProfile from './pages/Profile';
 import CollectionDetail from './pages/CollectionDetail';
-import { useAdminAccount } from './utils/hooks';
 
 function App() {
-  const isAdminLoggedIn = useAdminAccount();
-
   return (
     <PageLayout>
       <Routes>

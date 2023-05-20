@@ -145,24 +145,20 @@ const NewAccountModal: FunctionComponent<NewAccountModalProps> = ({
           <>
             <Alert severity="warning" sx={{ mb: 2 }}>
               <AlertTitle>Attention</AlertTitle>
-              This is your new wallet for ChainWards application. Please make sure to add
-              it to metamask or save it in a secure place before closing this window as
-              you won't be able to retrieve it again.
+              {
+                'This is your new wallet for ChainWards application. Please make sure to add it to metamask or save it in a secure place before closing this window as you wont be able to retrieve it again.'
+              }
             </Alert>
             <Typography style={{ wordWrap: 'break-word', fontWeight: 'bold' }}>
-              {' '}
               Public address:
             </Typography>
             <Typography style={{ wordWrap: 'break-word' }}>
-              {' '}
-              {newAccountDetails.address}{' '}
+              {newAccountDetails.address}
             </Typography>
             <Typography style={{ wordWrap: 'break-word', fontWeight: 'bold' }}>
-              {' '}
-              Private key:{' '}
+              Private key:
             </Typography>
             <Typography style={{ wordWrap: 'break-word' }}>
-              {' '}
               {newAccountDetails.signingKey.privateKey}{' '}
             </Typography>
           </>

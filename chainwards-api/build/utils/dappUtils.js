@@ -24,13 +24,13 @@ const createWallet = () => {
         signingKey: {
             publicKey: newWallet.publicKey,
             privateKey: newWallet.privateKey,
-        }
+        },
     };
     return walletData;
 };
 exports.createWallet = createWallet;
 const getNetworkUrl = (chainId) => {
-    let networkUrl = "";
+    let networkUrl = '';
     if (chainId == 5) {
         networkUrl = constants_1.RPC_ENDPOINTS.goerli;
     }
@@ -40,12 +40,12 @@ const getNetworkUrl = (chainId) => {
     return networkUrl;
 };
 const getNetworkApiKey = (chainId) => {
-    let apiKey = "";
+    let apiKey = '';
     if (chainId == 5) {
-        apiKey = config_1.default.get("goerli_api_key");
+        apiKey = config_1.default.get('goerli_api_key');
     }
     else if (chainId == 80001) {
-        apiKey = config_1.default.get("mumbai_api_key");
+        apiKey = config_1.default.get('mumbai_api_key');
     }
     return apiKey;
 };
@@ -55,16 +55,16 @@ const getProvider = () => {
     throw new ReferenceError('Provider not defined');
 };
 const setProvider = (uri) => {
-    if (!uri || uri === "")
+    if (!uri || uri === '')
         throw new Error('No uri specified');
     provider = new ethers_1.ethers.JsonRpcProvider(uri);
     return provider;
 };
 exports.setProvider = setProvider;
 const getRpcEndpoint = (chainId) => {
-    let networkUrl = getNetworkUrl(chainId);
-    let apiKey = getNetworkApiKey(chainId);
-    if (networkUrl === "" || apiKey === "")
+    const networkUrl = getNetworkUrl(chainId);
+    const apiKey = getNetworkApiKey(chainId);
+    if (networkUrl === '' || apiKey === '')
         throw new Error('RPC url not found');
     return `${networkUrl}/${apiKey}`;
 };

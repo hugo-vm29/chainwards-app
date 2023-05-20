@@ -8,6 +8,7 @@ const cors_1 = __importDefault(require("cors"));
 const config_1 = __importDefault(require("config"));
 const collections_1 = __importDefault(require("./routes/collections"));
 const accounts_1 = __importDefault(require("./routes/accounts"));
+/* eslint-disable @typescript-eslint/no-var-requires */
 const http = require('http');
 const app = (0, express_1.default)();
 /** CORS setup **/
@@ -16,18 +17,19 @@ const allowedDomains = [...config_1.default.get('allowedDomains').split(',')];
 // Set up a root domain and check against it:
 const corsOptions = {
     origin: function (requestOrigin, callback) {
-        if (!requestOrigin || allowedDomains.some(domain => new URL(requestOrigin).hostname === domain)) {
+        if (!requestOrigin ||
+            allowedDomains.some((domain) => new URL(requestOrigin).hostname === domain)) {
             callback(null, true);
         }
         else {
             callback(new Error('Not allowed by CORS'), allowedDomains);
         }
     },
-    credentials: true
+    credentials: true,
 };
 // const corsOptions = {
 //   origin(origin: string, callback: (arg0: Error | null, arg1: boolean | undefined) => void) {
-//     if ( !origin || allowedDomains.some( domain => { 
+//     if ( !origin || allowedDomains.some( domain => {
 //         const hostName = new URL(origin).hostname;
 //         return domain === hostName;
 //       })
@@ -49,6 +51,3 @@ app.use('/collections', collections_1.default);
 app.use('/accounts', accounts_1.default);
 const server = http.createServer(app);
 exports.default = server;
-// app.listen(8080, async () => {
-//   console.log('Server is running at http://localhost:8080');
-// });

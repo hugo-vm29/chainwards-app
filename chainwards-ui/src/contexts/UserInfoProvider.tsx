@@ -16,6 +16,8 @@ import { useLocation, matchPath, useNavigate } from 'react-router-dom';
 //   setName: Dispatch<SetStateAction<string>>;
 // }
 
+/* eslint-disable @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-function */
+
 export const UserContext = createContext({
   name: '',
   updateName: (param: string) => {},

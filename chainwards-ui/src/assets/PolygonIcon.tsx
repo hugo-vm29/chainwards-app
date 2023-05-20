@@ -1,6 +1,3 @@
-import React from 'react';
-import SvgIcon, { SvgIconProps } from '@mui/material/SvgIcon';
-
 const PolygonIcon = ({ ...props }) => {
   return (
     <svg

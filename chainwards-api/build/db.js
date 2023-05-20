@@ -21,7 +21,7 @@ exports.default = {
         if (!client) {
             throw new Error('Could not establish Mongo connection');
         }
-        db = client.db("chainwards");
+        db = client.db('chainwards');
         console.log('DB ready !!');
         return db;
     }),

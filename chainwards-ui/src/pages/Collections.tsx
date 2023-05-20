@@ -16,8 +16,6 @@ import {
 import { getNetworkName } from '../utils/helpers';
 import { BASE_METADATA_URI } from '../utils/constants';
 
-const provider = new ethers.BrowserProvider(window.ethereum);
-
 const Collections = () => {
   const { walletAddress, chainId, getRpcSigner } = useMetamaskContext();
 
@@ -109,7 +107,7 @@ const Collections = () => {
       console.log('An error has ocurred', err?.info?.error || '');
     }
   };
-  
+
   const checkPendingDeployment = async (transactionId: string) => {
     try {
       setLoadingTable(true);

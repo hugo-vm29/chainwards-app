@@ -14,6 +14,8 @@ import { useMetamaskContext } from '../contexts/MetamaskProvider';
 import { findAccountByWallet } from '../utils/fetch';
 import NewAccountModal from '../components/accounts/NewAccountModal';
 
+/* eslint-disable jsx-a11y/anchor-is-valid */
+
 const Landing = () => {
   const navigate = useNavigate();
 

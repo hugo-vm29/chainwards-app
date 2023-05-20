@@ -4,22 +4,36 @@ import {
   useEffect,
   createContext,
   FunctionComponent,
-  useMemo,
   useCallback,
 } from 'react';
 import PropTypes from 'prop-types';
 import { ethers } from 'ethers';
 
-export const MetamaskContext = createContext({
+/* eslint-disable @typescript-eslint/no-empty-function */
+
+type MetamaskContextType = {
+  metamaskInstalled: boolean;
+  walletAddress: string;
+  isWalletRegistered: boolean;
+  chainId: number;
+  updateStorageInfo: (status: boolean) => void;
+  connectToMetamask: () => Promise<string>;
+  resetWalletInfo: () => void;
+  getRpcSigner: () => void;
+};
+
+const defaultState = {
   metamaskInstalled: false,
   walletAddress: '',
   isWalletRegistered: false,
   chainId: 0,
-  updateStorageInfo: (status: boolean) => {},
+  updateStorageInfo: () => {},
   connectToMetamask: async () => '',
   resetWalletInfo: () => {},
   getRpcSigner: () => {},
-});
+};
+
+export const MetamaskContext = createContext<MetamaskContextType>(defaultState);
 
 const getLocalStorage = (keyName: string) => {
   const storageItem = localStorage.getItem(keyName);

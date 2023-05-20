@@ -19,7 +19,7 @@ function main() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             // setup DB
-            const mongoUrl = config_1.default.get("dbUrl");
+            const mongoUrl = config_1.default.get('dbUrl');
             yield db_1.default.connect(mongoUrl);
             app_1.default.listen(8080);
             console.log('Server is running at http://localhost:8080');
