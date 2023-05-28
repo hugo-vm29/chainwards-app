@@ -1,4 +1,5 @@
 {
   goerli_api_key: 'GOERLI_API_KEY',
-  mumbai_api_key: 'MUMBAI_API_KEY'
+  mumbai_api_key: 'MUMBAI_API_KEY',
+  nft_storage_key: 'NFT_STORAGE_TOKEN'
 }

@@ -1,1 +1,1 @@
-export const BASE_METADATA_URI = 'https://ipfs.filebase.io/ipfs/';
+export const BASE_METADATA_URI = 'https://nftstorage.link/ipfs/';

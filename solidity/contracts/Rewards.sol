@@ -63,6 +63,13 @@ contract Rewards is ERC1155, AccessControl, ERC1155URIStorage {
     }
 
     /**
+     * @notice Get collection symbol
+     */
+    function getTokenId() public view returns (uint256) {
+        return _tokenIds.current();
+    }
+
+    /**
      * @notice Required overrride
      */
     function supportsInterface(bytes4 interfaceId) public view override(ERC1155, AccessControl) returns (bool)
@@ -82,7 +89,7 @@ contract Rewards is ERC1155, AccessControl, ERC1155URIStorage {
      */
     function _setURI(uint256 tokenId, string memory tokenURI) internal override {
        super._setURI(tokenId,tokenURI);
-       emit SetUri(tokenId, tokenURI);       
+       emit SetUri(tokenId, tokenURI);     
     }
 
     /**
@@ -90,6 +97,13 @@ contract Rewards is ERC1155, AccessControl, ERC1155URIStorage {
      */
     function uri(uint256 tokenId) public view override (ERC1155, ERC1155URIStorage) returns (string memory) {
         return super.uri(tokenId);
+    }
+
+    /**
+     * @notice Change base uri for all tokens
+     */
+    function updateBaseURI(string memory baseURI) onlyRole(DEFAULT_ADMIN_ROLE) public  {
+       super._setBaseURI(baseURI);
     }
 
     /**

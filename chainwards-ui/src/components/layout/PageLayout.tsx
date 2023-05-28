@@ -39,7 +39,7 @@ const PageLayout: FunctionComponent<PageLayoutRouteProps> = ({ children }) => {
         },
         {
           name: 'Collections',
-          url: '/issue',
+          url: '/collections',
         },
       ]);
     }

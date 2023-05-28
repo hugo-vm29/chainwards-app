@@ -89,12 +89,12 @@ const CollectionsTable: FunctionComponent<CollectionsTableProps> = ({
 
   const columns = [
     {
-      name: 'collectioName',
+      name: 'collectionName',
       label: 'Collection Name',
       options: {
         customBodyRender: (value: string, tableMeta: any) => {
           const status: string = tableMeta.rowData[4];
-          const collectionId: string = tableMeta.rowData[5];
+          const collectionId: string = tableMeta.rowData[6];
           return (
             <>
               {status === 'pending' ? (
@@ -116,7 +116,7 @@ const CollectionsTable: FunctionComponent<CollectionsTableProps> = ({
       },
     },
     {
-      name: 'collectioSymbol',
+      name: 'collectionSymbol',
       label: 'Symbol',
       options: {
         customBodyRender: (value: string) => {
@@ -173,7 +173,7 @@ const CollectionsTable: FunctionComponent<CollectionsTableProps> = ({
       options: {
         filter: false,
         customBodyRender: (value: string, tableMeta: any) => {
-          const transactionId = tableMeta.rowData[6];
+          const transactionId = tableMeta.rowData[7];
           return (
             <Tooltip
               title={value == 'pending' ? 'click to refresh' : ''}

@@ -192,11 +192,6 @@ router.get('/transaction/status/:txnId', async (req: Request, res: Response, nex
 router.get('/findByWallet/:pubKey', async (req: Request, res: Response, next) => {
   try {
     const { pubKey } = req.params;
-    // const { chainId } = req.query;
-
-    // let newtorkId = 5;
-    // if(chainId)
-    //   newtorkId = Number(chainId);
 
     const dbReponse = await db
       .collection('transactions')
@@ -205,7 +200,6 @@ router.get('/findByWallet/:pubKey', async (req: Request, res: Response, next) =>
           $match: {
             from: pubKey.toLowerCase(),
             transactionType: 'DEPLOY',
-            //chainId: newtorkId
           },
         },
         {
@@ -222,11 +216,16 @@ router.get('/findByWallet/:pubKey', async (req: Request, res: Response, next) =>
           },
         },
         {
+          $match: {
+            'collectionInfo.status': { $ne: 'obsolete' },
+          },
+        },
+        {
           $group: {
             _id: '$_id',
             collectionId: { $first: '$collectionInfo._id' },
-            collectioName: { $first: '$collectionInfo.name' },
-            collectioSymbol: { $first: '$collectionInfo.symbol' },
+            collectionName: { $first: '$collectionInfo.name' },
+            collectionSymbol: { $first: '$collectionInfo.symbol' },
             contractAddress: { $first: '$collectionInfo.contractAddress' },
             contractOwner: { $first: '$from' },
             chainId: { $first: '$chainId' },
@@ -242,6 +241,59 @@ router.get('/findByWallet/:pubKey', async (req: Request, res: Response, next) =>
     if (dbReponse.length == 0) return res.json([]);
 
     return res.json(dbReponse);
+  } catch (err) {
+    console.error(`Error: ${err}`);
+    return next(err);
+  }
+});
+
+router.get('/:collectionId', async (req: Request, res: Response, next) => {
+  try {
+    const { collectionId } = req.params;
+
+    const dbReponse = await db
+      .collection('collections')
+      .aggregate([
+        {
+          $match: {
+            _id: new ObjectId(collectionId),
+          },
+        },
+        {
+          $lookup: {
+            from: 'transactions',
+            localField: 'transactionId',
+            foreignField: '_id',
+            as: 'transactionInfo',
+          },
+        },
+        {
+          $unwind: {
+            path: '$transactionInfo',
+          },
+        },
+        {
+          $group: {
+            _id: '$_id',
+            collectionName: { $first: '$name' },
+            collectiondescription: { $first: '$description' },
+            collectionSymbol: { $first: '$symbol' },
+            contractAddress: { $first: '$contractAddress' },
+            contractOwner: { $first: '$transactionInfo.from' },
+            chainId: { $first: '$transactionInfo.chainId' },
+            collectionStatus: { $first: '$status' },
+            blockIssuers: { $first: '$blockIssuers' },
+            transactionHash: { $first: '$transactionInfo.transactionHash' },
+            createdOn: { $first: '$createdOn' },
+          },
+        },
+      ])
+      .toArray();
+
+    if (dbReponse.length === 0)
+      return res.status(404).send({ error: 'Collection not found' });
+
+    return res.json(dbReponse[0]);
   } catch (err) {
     console.error(`Error: ${err}`);
     return next(err);

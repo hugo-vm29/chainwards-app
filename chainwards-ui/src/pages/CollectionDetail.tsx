@@ -1,36 +1,37 @@
 import { useState, useCallback, useEffect } from 'react';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import Container from '@mui/material/Container';
 import { useParams } from 'react-router-dom';
 import { getSingleCollectionInfo } from '../utils/fetch';
-import Loader from '../components/shared/Loader';
-import { CollectionInfoType } from '../utils/types';
 import DetailsCard from '../components/collections/DetailsCard';
-import SearchField from '../components/collections/SearchField';
+import TokensGallery from '../components/collections/TokensGallery';
+import * as types from '../utils/types';
 
 /* eslint-disable  @typescript-eslint/no-empty-function */
 
 const CollectionDetail = () => {
   const { collectionId } = useParams();
-  const [loadingPage, setLoadingPage] = useState(true);
-  const [collectionInfo, setCollectionInfo] = useState<CollectionInfoType | null>(null);
+  const [collectionInfo, setCollectionInfo] = useState<types.CollectionDetail | null>(
+    null,
+  );
+
+  const [loadingInfo, setLoadingInfo] = useState(true);
 
   const getBasicInfo = useCallback(async () => {
     try {
       if (collectionId) {
-        setLoadingPage(true);
+        setLoadingInfo(true);
         const response = await getSingleCollectionInfo(collectionId);
         //console.log("here", response);
         if (response.status === 200) {
           setCollectionInfo(response.data);
+          //getListedTokens(response.data.contractAddress);
         }
       }
     } catch (err) {
       console.error('Error loading data', 'error');
     }
-    setLoadingPage(false);
+    setLoadingInfo(false);
   }, [collectionId]);
 
   useEffect(() => {
@@ -39,28 +40,22 @@ const CollectionDetail = () => {
 
   return (
     <Container maxWidth={false}>
-      <Loader loading={loadingPage} />
-      {collectionInfo && !loadingPage && (
+      {/* <Loader loading={loadingPage} /> */}
+      {collectionInfo && (
         <>
           <Grid container wrap="nowrap" sx={{ height: '100%', overflow: 'auto' }}>
             <Grid item md={4} xs={12}>
-              <DetailsCard collectionInfo={collectionInfo} />
+              <DetailsCard collectionInfo={collectionInfo} loadingPage={loadingInfo} />
             </Grid>
             <Grid item md={8} xs={12}>
-              <Box sx={{ px: 8, mt: 8 }}>
-                <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 2 }}>
-                  NFTs in this collection
-                </Typography>
-
-                <Typography sx={{ mb: 2 }}>Unique items: 0</Typography>
-
-                <SearchField handleSearch={() => {}} />
-              </Box>
+              {collectionInfo.collectionStatus === 'active' && (
+                <TokensGallery contractAddress={collectionInfo.contractAddress} />
+              )}
             </Grid>
           </Grid>
         </>
       )}
-      {loadingPage && <Loader loading />}
+      {/* {loadingPage && <Loader loading />} */}
     </Container>
   );
 };

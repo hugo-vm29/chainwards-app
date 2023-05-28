@@ -1,5 +1,6 @@
 import config from 'config';
 import { ethers } from 'ethers';
+import { MerkleTree } from 'merkletreejs';
 import { RPC_ENDPOINTS } from './constants';
 
 let provider: ethers.JsonRpcProvider | null = null;
@@ -64,6 +65,17 @@ export const getTransactionReceipt = async (txHash: string) => {
   const provider = getProvider();
   const txReceipt = await provider.getTransactionReceipt(txHash);
   return txReceipt;
+};
+
+export const getMerkleRoot = (whitelist: string[]) => {
+  const leaves = whitelist.map((addr) => ethers.keccak256(addr));
+  const merkleTree = new MerkleTree(leaves, ethers.keccak256, { sortPairs: true });
+  const merkleRootHash = merkleTree.getHexRoot();
+  return merkleRootHash;
+};
+
+export const validateAddress = (address: string) => {
+  return ethers.isAddress(address);
 };
 
 // const getAlchemyConfig = (chainId: number) => {

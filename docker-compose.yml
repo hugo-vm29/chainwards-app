@@ -25,6 +25,7 @@ services:
     environment:
       GOERLI_API_KEY: '671PtQ13VWj_XVlnrf5xRTqtBEyTKHJU'
       MUMBAI_API_KEY: 'GsnmMirup8QVC8LzwFyiOmbXm6uq5oC4'
+      NFT_STORAGE_TOKEN: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweDNDQkI2ODdCNDQwNDg5NTkyMjg3N0QzRWVCRTA3NmU4OTk1Y0U1MDIiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTY4NTA0OTk0MzEyOSwibmFtZSI6IkNoYWlud2FyZHNBcHAifQ.Zx8HlRjaCp1zD6ZbbgHNfdNy8_WJYxiSiVWtOfHb57k'
       # ENV: 'local'
     ports:
       - '8080:8080'

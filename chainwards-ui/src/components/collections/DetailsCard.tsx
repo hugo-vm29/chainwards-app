@@ -7,6 +7,7 @@ import CardContent from '@mui/material/CardContent';
 import { formatAddress, formatDate, formatTxHash } from '../../utils/helpers';
 import CardItem from './CardItem';
 import AdminActions from './AdminActions';
+import Loader from '../../components/shared/Loader';
 
 const styles = {
   cardRoot: {
@@ -14,10 +15,19 @@ const styles = {
     mx: 2,
     background: '#fafafa 0% 0% no-repeat padding-box',
     boxShadow: '0px 3px 6px #00000029',
+    minHeight: '35em',
+  },
+  loader: {
+    position: 'relative',
+    display: 'block',
+    backgroundColor: 'transparent',
   },
 };
 
-const DetailsCard: FunctionComponent<DetailsCardProps> = ({ collectionInfo }) => {
+const DetailsCard: FunctionComponent<DetailsCardProps> = ({
+  collectionInfo,
+  loadingPage,
+}) => {
   const getNetworkName = (chainId: number) => {
     let name = '';
     if (chainId == 5) {
@@ -31,32 +41,42 @@ const DetailsCard: FunctionComponent<DetailsCardProps> = ({ collectionInfo }) =>
   return (
     <Card variant="outlined" sx={styles.cardRoot}>
       <CardContent>
-        <Box display="flex" sx={{ justifyContent: 'space-between' }}>
-          <Typography variant="h5" sx={{ fontWeight: 'bold', mb: 2 }}>
-            {collectionInfo?.collection_name}
-          </Typography>
-          <AdminActions collectionId={collectionInfo._id} />
-        </Box>
+        <Loader loading={loadingPage || false} sx={styles.loader} size={35} />
+        {!loadingPage && (
+          <>
+            <Box display="flex" sx={{ pt: 2, mb: 4, alignItems: 'center' }}>
+              <Typography variant="h5" sx={{ fontWeight: 'bold', flexGrow: 1 }}>
+                {collectionInfo.collectionName +
+                  (collectionInfo.collectionSymbol !== ''
+                    ? ` (${collectionInfo.collectionSymbol})`
+                    : '')}
+              </Typography>
+              <AdminActions collectionId={collectionInfo._id} />
+            </Box>
 
-        <Typography sx={{ mb: 4 }}>{collectionInfo?.collection_description}</Typography>
-        <CardItem
-          label="Contract Address"
-          data={formatAddress(collectionInfo.contract_address)}
-          link="#"
-          tooltipText="view on etherscan"
-        />
-        <CardItem
-          label="Transaction:"
-          data={formatTxHash(collectionInfo.transaction_hash)}
-          link="#"
-          tooltipText="view on etherscan"
-        />
-        <CardItem label="Owner" data={collectionInfo.deployed_by} />
-        <CardItem label="Network" data={getNetworkName(collectionInfo.chainId)} />
-        <CardItem
-          label="Deployed on"
-          data={formatDate(new Date(collectionInfo.created_on)).toString()}
-        />
+            <Typography sx={{ mb: 4 }}>{collectionInfo.collectiondescription}</Typography>
+
+            <CardItem
+              label="Contract Address"
+              data={formatAddress(collectionInfo.contractAddress)}
+              link="#"
+              tooltipText="view on block explorer"
+            />
+            <CardItem
+              label="Transaction:"
+              data={formatTxHash(collectionInfo.transactionHash)}
+              link="#"
+              tooltipText="view on block explorer"
+            />
+            <CardItem label="Owner" data={collectionInfo.contractOwner} />
+            <CardItem label="Network" data={getNetworkName(collectionInfo.chainId)} />
+
+            <CardItem
+              label="Deployed on"
+              data={formatDate(collectionInfo.createdOn).toString()}
+            />
+          </>
+        )}
       </CardContent>
     </Card>
   );
@@ -65,19 +85,24 @@ const DetailsCard: FunctionComponent<DetailsCardProps> = ({ collectionInfo }) =>
 const propTypes = {
   collectionInfo: PropTypes.shape({
     _id: PropTypes.string.isRequired,
-    collection_name: PropTypes.string.isRequired,
-    collection_description: PropTypes.string.isRequired,
-    contract_address: PropTypes.string.isRequired,
-    transaction_status: PropTypes.string.isRequired,
-    transaction_hash: PropTypes.string.isRequired,
-    created_on: PropTypes.string.isRequired,
-    deployed_by: PropTypes.string.isRequired,
+    collectionName: PropTypes.string.isRequired,
+    collectiondescription: PropTypes.string.isRequired,
+    collectionSymbol: PropTypes.string.isRequired,
+    contractAddress: PropTypes.string.isRequired,
+    contractOwner: PropTypes.string.isRequired,
     chainId: PropTypes.number.isRequired,
+    collectionStatus: PropTypes.string.isRequired,
+    blockIssuers: PropTypes.bool.isRequired,
+    transactionHash: PropTypes.string.isRequired,
+    createdOn: PropTypes.instanceOf(Date).isRequired,
   }).isRequired,
+  loadingPage: PropTypes.bool,
 };
 
 type DetailsCardProps = PropTypes.InferProps<typeof propTypes>;
 
-DetailsCard.defaultProps = {};
+DetailsCard.defaultProps = {
+  loadingPage: false,
+};
 
 export default DetailsCard;

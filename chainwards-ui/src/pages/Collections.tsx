@@ -30,6 +30,7 @@ const Collections = () => {
     if (address !== '') {
       setLoadingTable(true);
       const response = await getCollectionsForAccount(address, chainId);
+
       if (response.status == 200) {
         setCollectionsList(response.data);
       }
@@ -84,20 +85,7 @@ const Collections = () => {
         },
       };
 
-      // const body: types.NewCollectionReqBody = {
-      //   deployAddress: signer.address.toLowerCase(),
-      //   txnHash: "0xcf2e83617ae8befb96753ecb350ad4274fa735a81a01d7663157f647473e3132",
-      //   chainId: chainId.toString(),
-      //   collectionInfo: {
-      //     name: "Awesome Collection 1",
-      //     symbol: "AW1",
-      //     description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed vestibulum quis odio et pretium. Suspendisse sollicitudin est id dui interdum, vitae blandit nibh porta.",
-      //   }
-      // }
-
-      const apiResponse = await saveNewCollection(body);
-      console.log('api response : ', apiResponse.data);
-
+      await saveNewCollection(body);
       setOpenModalNew(false);
       setSubmittingNew(false);
       await getCollections(signer.address);
@@ -111,8 +99,7 @@ const Collections = () => {
   const checkPendingDeployment = async (transactionId: string) => {
     try {
       setLoadingTable(true);
-      //console.log("transactionId", transactionId);
-      const response: any = await checkPendingTxnForCollection(transactionId); //collectionId
+      const response: any = await checkPendingTxnForCollection(transactionId);
 
       if (response.status == 200) {
         if (response.data.transactionStatus == 'completed') {

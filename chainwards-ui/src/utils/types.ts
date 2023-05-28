@@ -20,8 +20,8 @@ export type NewCollectionFormValues = {
 export type CollectionsRow = {
   _id: string;
   collectionId: string;
-  collectioName: string;
-  collectioSymbol: string;
+  collectionName: string;
+  collectionSymbol: string;
   contractAddress: string;
   contractOwner: string;
   chainId: string;
@@ -39,6 +39,45 @@ export type NewCollectionReqBody = {
     symbol: string;
     description: string;
   };
+};
+
+export type CollectionDetail = {
+  _id: string;
+  collectionName: string;
+  collectiondescription: string;
+  collectionSymbol: string;
+  contractAddress: string;
+  contractOwner: string;
+  chainId: number;
+  collectionStatus: string;
+  blockIssuers: boolean;
+  transactionHash: string;
+  createdOn: Date;
+};
+
+export type ListedToken = {
+  tokenId: number;
+  issuer: string;
+  merkletRoot: string;
+  claimable: boolean;
+  claimers: string[];
+};
+
+export type TokenGalleryItem = {
+  tokenId: number;
+  name: string;
+  owners: string[];
+  image: string;
+  claimable: boolean;
+};
+
+export type NewTokenReqBody = {
+  tokenId: number;
+  issuer: string;
+  contract: string;
+  txnHash: string;
+  chainId: number;
+  claimers: string;
 };
 
 // to review -->

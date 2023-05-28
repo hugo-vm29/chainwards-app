@@ -3,6 +3,7 @@ import cors from 'cors';
 import config from 'config';
 import collectionRoutes from './routes/collections';
 import accountsRoutes from './routes/accounts';
+import tokenRoutes from './routes/tokens';
 
 /* eslint-disable @typescript-eslint/no-var-requires */
 
@@ -57,6 +58,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/health-check', (req: Request, res: Response) => res.sendStatus(200));
 app.use('/collections', collectionRoutes);
 app.use('/accounts', accountsRoutes);
+app.use('/tokens', tokenRoutes);
 
 const server = http.createServer(app);
 export default server;

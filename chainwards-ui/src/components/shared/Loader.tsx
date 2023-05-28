@@ -18,7 +18,7 @@ const styles = {
   },
 };
 
-const Loader: FunctionComponent<LoaderProps> = ({ loading, sx, ...props }) => {
+const Loader: FunctionComponent<LoaderProps> = ({ loading, sx, size, ...props }) => {
   return loading ? (
     <Box
       sx={[
@@ -27,7 +27,7 @@ const Loader: FunctionComponent<LoaderProps> = ({ loading, sx, ...props }) => {
         ...(Array.isArray(sx) ? sx : [sx]),
       ]}
     >
-      <CircularProgress size={51} {...props} />
+      <CircularProgress size={size || 51} {...props} />
     </Box>
   ) : (
     <></>
@@ -43,12 +43,14 @@ const propTypes = {
     PropTypes.func,
     PropTypes.object,
   ]),
+  size: PropTypes.number,
 };
 
 type LoaderProps = PropTypes.InferProps<typeof propTypes>;
 Loader.propTypes = propTypes;
 Loader.defaultProps = {
   sx: {},
+  size: 51,
 };
 
 export default Loader;

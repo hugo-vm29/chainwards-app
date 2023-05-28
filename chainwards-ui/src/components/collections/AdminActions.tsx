@@ -8,8 +8,8 @@ import ListItemText from '@mui/material/ListItemText';
 import Button from '@mui/material/Button';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import ModeEditOutlineOutlinedIcon from '@mui/icons-material/ModeEditOutlineOutlined';
-import AcUnitIcon from '@mui/icons-material/AcUnit';
-import IssuersList from './IssuersList';
+import SettingsIcon from '@mui/icons-material/Settings';
+//import IssuersList from './IssuersList';
 //import { getIssuersList } from '../../utils/fetch';
 
 const styles = {
@@ -32,7 +32,7 @@ const AdminActions: FunctionComponent<AdminActionsProps> = ({ collectionId }) =>
 
   const [openIssuersModal, setOpenIssuersModal] = useState(false);
 
-  const [issuersList, setIssuersList] = useState<string[]>([]);
+  //const [issuersList, setIssuersList] = useState<string[]>([]);
   //const [submitIssuersChange, setSubmitIssuersChange] = useState(false);
 
   const handleMenuButton = (event: React.SyntheticEvent) => {
@@ -43,24 +43,14 @@ const AdminActions: FunctionComponent<AdminActionsProps> = ({ collectionId }) =>
     setAnchorEl(null);
   };
 
-  const handleManageIssuers = () => {
-    handleCloseMenu();
-    setOpenIssuersModal(true);
-  };
+  // const handleManageIssuers = () => {
+  //   handleCloseMenu();
+  //   setOpenIssuersModal(true);
+  // };
 
-  const onCloseIssuersModal = () => {
-    setOpenIssuersModal(false);
-  };
-
-  // const getCurrentIssuersList = useCallback(async (id: string) => {
-  //     try {
-
-  //     } catch (err) {
-  //       console.error('Error loading data', 'error');
-  //     }
-  //   },
-  //   [collectionId],
-  // );
+  // const onCloseIssuersModal = () => {
+  //   setOpenIssuersModal(false);
+  // };
 
   useEffect(() => {
     //getCurrentIssuersList(collectionId);
@@ -94,7 +84,7 @@ const AdminActions: FunctionComponent<AdminActionsProps> = ({ collectionId }) =>
           'aria-labelledby': 'edit-client-menu',
         }}
       >
-        <MenuItem onClick={handleManageIssuers}>
+        <MenuItem onClick={() => {}}>
           <ListItemIcon>
             <ModeEditOutlineOutlinedIcon sx={styles.icons} />
           </ListItemIcon>
@@ -102,23 +92,17 @@ const AdminActions: FunctionComponent<AdminActionsProps> = ({ collectionId }) =>
         </MenuItem>
         <MenuItem onClick={() => {}}>
           <ListItemIcon>
-            <AcUnitIcon sx={styles.icons} />
+            <SettingsIcon sx={styles.icons} />
           </ListItemIcon>
           <ListItemText>Collection settings</ListItemText>
         </MenuItem>
-        {/* <MenuItem onClick={() => {}}>
-          <ListItemIcon>
-            <PauseCircleOutlineIcon sx={styles.icons} />
-          </ListItemIcon>
-          <ListItemText>Disable minting</ListItemText>
-        </MenuItem>  */}
       </Menu>
-      <IssuersList
+      {/* <IssuersList
         openModal={openIssuersModal}
         onClose={onCloseIssuersModal}
         issuersList={issuersList}
         onSubmitData={onSubmitChangeIssuers}
-      />
+      /> */}
     </>
   );
 };

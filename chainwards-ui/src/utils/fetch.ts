@@ -48,13 +48,13 @@ export const saveNewCollection = (data: types.NewCollectionReqBody) => {
   return result;
 };
 
-export const checkPendingTxnForCollection = (txId: string) => {
-  const url = `${apiUrl}/collections/transaction/status/${txId}`;
+export const checkPendingTxnForCollection = (transactionId: string) => {
+  const url = `${apiUrl}/collections/transaction/status/${transactionId}`;
   const result = axios.get(url);
   return result;
 };
 
-/** Collection detail * */
+/** Collection detail **/
 
 export const getSingleCollectionInfo = (collectionId: string) => {
   const url = `${apiUrl}/collections/${collectionId}`;
@@ -71,5 +71,19 @@ export const getIssuersList = (collectionId: string) => {
 export const changeCollectionIssuers = (data: types.ReqBodyIssuers) => {
   const url = `${apiUrl}/collections/issuers`;
   const result = axios.put(url, data);
+  return result;
+};
+
+/** Tokens **/
+
+export const saveTokenMetadata = (data: FormData) => {
+  const url = `${apiUrl}/tokens/metadata/upload`;
+  const result = axios.post(url, data);
+  return result;
+};
+
+export const newListedToken = (data: types.NewTokenReqBody) => {
+  const url = `${apiUrl}/tokens`;
+  const result = axios.post(url, data);
   return result;
 };

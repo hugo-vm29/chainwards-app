@@ -55,11 +55,12 @@ async function main() {
     
     //await deployContract(provider);
 
-    let whitelist = ["0x39B81615B0C6604DEA445D5cb8eF5bbFD086C7bd", "0x25DD09A8d51460730a896e7CD58D87daD624c063"];
+    let whitelist = ["0xb8790386c88565e681b708bc227B76Cd0733c603", "0x25DD09A8d51460730a896e7CD58D87daD624c063", "0x39B81615B0C6604DEA445D5cb8eF5bbFD086C7bd"];
     const merkleRootHash = getMerkleRoot(whitelist);
     console.log("merkleRootHash", merkleRootHash);
 
-    const merkleProof = getMerkleProof(whitelist,"0x39B81615B0C6604DEA445D5cb8eF5bbFD086C7bd" );
+    const leaf = "0xb8790386c88565e681b708bc227B76Cd0733c603"
+    const merkleProof = getMerkleProof(whitelist,leaf);
     console.log("merkleProof", merkleProof);
 
   }catch(err){

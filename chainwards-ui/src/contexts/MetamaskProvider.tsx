@@ -87,11 +87,11 @@ const MetamaskProvider: FunctionComponent<MetamaskProviderProps> = ({ children }
     if (accounts.length > 0) {
       if (currentInfo !== null) {
         if (accounts[0] === currentInfo.wallet && currentInfo.isRegistered) {
-          console.log('aqui , set from localstorage');
+          console.log('set from localstorage');
           setWalletAddress(currentInfo.wallet);
           setIsWalletRegistered(currentInfo.isRegistered);
         } else {
-          console.log('aqui , localstorage invalid');
+          console.log('localstorage invalid');
           localStorage.clear();
         }
       } else {
@@ -119,7 +119,7 @@ const MetamaskProvider: FunctionComponent<MetamaskProviderProps> = ({ children }
       const accounts = await provider.send('eth_requestAccounts', []);
 
       if (accounts.length > 0) {
-        console.log('accounts', accounts);
+        //console.log('accounts', accounts);
         setWalletAddress(accounts[0]);
         return accounts[0];
       }
