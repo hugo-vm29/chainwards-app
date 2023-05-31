@@ -50,3 +50,14 @@ export const formatTxHash = (txHash: string) => {
     return '';
   }
 };
+
+export const getBlockExplorerURI = (chainId: number) => {
+  let baseUri = '';
+
+  if (chainId == 5) {
+    baseUri = 'https://goerli.etherscan.io';
+  } else if (chainId == 80001) {
+    baseUri = 'https://mumbai.polygonscan.com';
+  }
+  return baseUri;
+};

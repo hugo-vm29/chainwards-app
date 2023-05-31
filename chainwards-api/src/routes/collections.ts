@@ -300,6 +300,29 @@ router.get('/:collectionId', async (req: Request, res: Response, next) => {
   }
 });
 
+router.get(
+  '/:collectionId/tokens/:tokenId',
+  async (req: Request, res: Response, next) => {
+    const routeName = 'get/collections/:collectionId/tokens/:tokenId';
+
+    try {
+      const { collectionId, tokenId } = req.params;
+
+      const findToken = await db.collection('tokens').findOne({
+        tokenId: Number(tokenId),
+        collectionId: new ObjectId(collectionId),
+      });
+
+      if (!findToken) return res.status(400).send({ error: 'Token not found' });
+
+      return res.json(findToken);
+    } catch (err) {
+      console.error(`Error (${routeName}): ${err}`);
+      return next(err);
+    }
+  },
+);
+
 /*
 router.get('/issuers/:collectionId',  async (req: Request, res: Response, next) => {
 

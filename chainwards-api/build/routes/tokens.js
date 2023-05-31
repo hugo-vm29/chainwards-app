@@ -18,11 +18,11 @@ const config_1 = __importDefault(require("config"));
 const multer_1 = __importDefault(require("multer"));
 const nft_storage_1 = require("nft.storage");
 const dappUtils_1 = require("../utils/dappUtils");
+const mongodb_1 = require("mongodb");
 const memStorage = multer_1.default.memoryStorage();
 const upload = (0, multer_1.default)({ storage: memStorage });
 /* eslint-disable camelcase */
 const router = express_1.default.Router({ mergeParams: true });
-const NFT_STORAGE_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweDNDQkI2ODdCNDQwNDg5NTkyMjg3N0QzRWVCRTA3NmU4OTk1Y0U1MDIiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTY4NTA0OTk0MzEyOSwibmFtZSI6IkNoYWlud2FyZHNBcHAifQ.Zx8HlRjaCp1zD6ZbbgHNfdNy8_WJYxiSiVWtOfHb57k';
 const endpoint = 'https://api.nft.storage';
 router.post('/metadata/upload', upload.single('file'), (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -30,7 +30,9 @@ router.post('/metadata/upload', upload.single('file'), (req, res, next) => __awa
             return res.status(400).send({ error: 'Image is required' });
         const storageServiceKey = config_1.default.get('nft_storage_key');
         if (!storageServiceKey)
-            return res.status(500).send({ error: 'Server is unable to upload metadata, missing key' });
+            return res
+                .status(500)
+                .send({ error: 'Server is unable to upload metadata, missing key' });
         const { name, description, attributes, claimers } = req.body;
         const fileData = req.file.buffer;
         /** ERC-1155 Metadata **/
@@ -40,51 +42,32 @@ router.post('/metadata/upload', upload.single('file'), (req, res, next) => __awa
         formattedItems.forEach((item) => {
             additonalAttributes.push({
                 trait_type: item.key,
-                value: item.value
+                value: item.value,
             });
         });
         //console.log("additonalAttributes", additonalAttributes);
-        const newFile = new nft_storage_1.File([fileData], req.file.originalname, { type: req.file.mimetype });
+        const newFile = new nft_storage_1.File([fileData], req.file.originalname, {
+            type: req.file.mimetype,
+        });
         const tokenMetadata = {
             image: newFile,
             name: name,
             description: description,
-            attributes: additonalAttributes
+            attributes: additonalAttributes,
         };
-        // const tokenURISample = "bafyreic5th7uhzxeukjf6k4e5zzq4cvfjrt6c4kbj2ehi577kpy2mwsrya/metadata.json";
-        // const rootSample = "0x37181768d1bbc7e81f1c388228b2f8012b613ced2a4d988a5522069587f2a0a7";
-        // return res.json({
-        //   tokenURI: tokenURISample,
-        //   merkleRoot: rootSample
-        // });
         /** Compute merkle root hash with claimers (whitelisting functionality) **/
-        let addresses = claimers.trim().split(',');
-        let whitelist = [];
-        addresses.forEach((item) => {
-            if (item !== "" && (0, dappUtils_1.validateAddress)(item)) {
-                whitelist.push(item.toLocaleLowerCase());
-            }
-        });
+        const whitelist = (0, dappUtils_1.stringToAdressArray)(claimers);
         const merkleRoot = (0, dappUtils_1.getMerkleRoot)(whitelist);
-        const client = new nft_storage_1.NFTStorage({ endpoint: new URL(endpoint), token: storageServiceKey });
+        const client = new nft_storage_1.NFTStorage({
+            endpoint: new URL(endpoint),
+            token: storageServiceKey,
+        });
         const serviceResponse = yield client.store(tokenMetadata);
-        const tokenURI = serviceResponse.url.replace("ipfs://", "");
+        const tokenURI = serviceResponse.url.replace('ipfs://', '');
         return res.json({
             tokenURI: tokenURI,
-            merkleRoot: merkleRoot
+            merkleRoot: merkleRoot,
         });
-        //const client = new NFTStorage({ endpoint: endpoint, token: NFT_STORAGE_TOKEN })
-        // console.log("test 1", (typeof req));
-        // console.log("test 2", (typeof req.file));
-        //console.log("req file", req.file);
-        //console.log("token name", name);
-        //const fileExtension = extname(req.file.originalname);
-        // const metadata = await client.store(nftMetadata);
-        // console.log('FULL metadata: -->\n', metadata);
-        // console.log('IPFS URL for the metadata --> ', metadata.url)
-        // console.log('metadata.json contents --> \n', metadata.data)
-        // console.log('metadata.json with IPFS gateway URLs--> \n', metadata.embed());
-        // https://nftstorage.link/ipfs/bafyreibxarf4m665m4563alat4ydyq5nirx76yquw6vtxvnxmlpoxllegm/metadata.json
     }
     catch (err) {
         console.error(`Error: ${err}`);
@@ -92,9 +75,19 @@ router.post('/metadata/upload', upload.single('file'), (req, res, next) => __awa
     }
 }));
 router.post('/', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const logMetaData = { logSource: 'post/routes/tokens' };
+    const routeName = { logSource: 'post/tokens' };
     try {
         const { tokenId, issuer, contract, txnHash, chainId, claimers } = req.body;
+        const findCollection = yield db_1.default.collection('collections').findOne({ 'contractAddress': contract }, {
+            projection: {
+                _id: 1,
+                name: 1
+            },
+        });
+        if (!findCollection)
+            return res
+                .status(400)
+                .send({ error: 'No collection was found for the provided address' });
         const txnObject = {
             from: issuer.toLowerCase(),
             to: contract,
@@ -102,32 +95,92 @@ router.post('/', (req, res, next) => __awaiter(void 0, void 0, void 0, function*
             chainId: Number(chainId),
             status: 'completed',
             transactionType: 'ISSUE',
-            contractAddress: contract,
-            timestamp: new Date()
+            timestamp: new Date(),
         };
         const txnResponse = yield db_1.default.collection('transactions').insertOne(txnObject);
-        let addresses = claimers.trim().split(',');
-        let whitelist = [];
+        const addresses = claimers.trim().split(',');
+        const whitelist = [];
         addresses.forEach((item) => {
-            if (item !== "" && (0, dappUtils_1.validateAddress)(item)) {
+            if (item !== '' && (0, dappUtils_1.validateAddress)(item)) {
                 whitelist.push(item.toLocaleLowerCase());
             }
         });
         const tokenObject = {
             tokenId: tokenId,
             transactionId: txnResponse.insertedId,
+            collectionId: findCollection._id,
             whitelist: whitelist,
             claimable: true,
-            timestamp: new Date(),
+            chainId: Number(chainId),
+            createdOn: new Date(),
+            lastUpdated: new Date(),
+            lastUpdateTransaction: txnResponse.insertedId
         };
         yield db_1.default.collection('tokens').insertOne(tokenObject);
         return res.json({
             tokenId: tokenId,
-            transactionId: txnResponse.insertedId
+            transactionId: txnResponse.insertedId,
+            collectionId: tokenObject.collectionId
         });
     }
     catch (err) {
-        console.error(`Error (${logMetaData}): ${err}`);
+        console.error(`Error (${routeName}): ${err}`);
+        return next(err);
+    }
+}));
+router.patch('/claimers', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const routeName = 'patch/tokens/claimers';
+    try {
+        /** Save a new list of claimers for a token AFTER the
+         * corresponding merkle root have been change on chain (i.e. blockchain transaction have been confirmed)
+         * **/
+        const { tokenId, collectionId, newClaimers, from, txnHash } = req.body;
+        if (!txnHash)
+            return res.status(400).send({ error: 'A transaction hash is required' });
+        const collectionUniqueId = new mongodb_1.ObjectId(collectionId);
+        const findCollection = yield db_1.default.collection('collections').findOne({ '_id': collectionUniqueId }, {
+            projection: {
+                _id: 1,
+                contractAddress: 1
+            },
+        });
+        if (!findCollection)
+            return res.status(404).send({ error: 'Collection not found' });
+        const txnObject = {
+            from: from.toLowerCase(),
+            to: findCollection.contractAddress,
+            transactionHash: txnHash,
+            status: 'completed',
+            transactionType: 'SET_MERKLE_ROOT',
+            timestamp: new Date(),
+        };
+        const txnResponse = yield db_1.default.collection('transactions').insertOne(txnObject);
+        const whitelist = (0, dappUtils_1.stringToAdressArray)(newClaimers);
+        const queryResponse = yield db_1.default.collection('tokens').findOneAndUpdate({
+            tokenId: Number(tokenId),
+            collectionId: collectionUniqueId
+        }, {
+            $set: {
+                whitelist: whitelist,
+                lastUpdated: new Date(),
+                lastUpdateTransaction: txnResponse.insertedId
+            },
+        }, {
+            returnDocument: 'after',
+            projection: {
+                tokenId: 1,
+                whitelist: 1
+            },
+        });
+        const updatedDocument = queryResponse.value;
+        return res.json({
+            tokenId: updatedDocument.tokenId,
+            collectionId: collectionUniqueId,
+            whitelist: updatedDocument.whitelist
+        });
+    }
+    catch (err) {
+        console.error(`Error (${routeName}): ${err}`);
         return next(err);
     }
 }));

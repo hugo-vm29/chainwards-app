@@ -19,7 +19,7 @@ contract Rewards is ERC1155, AccessControl, ERC1155URIStorage {
       address issuer;
       bytes32 merkletRoot;
       bool claimable;
-      address [] claimers;
+      address [] owners;
     }
     
     string private _name;
@@ -28,7 +28,7 @@ contract Rewards is ERC1155, AccessControl, ERC1155URIStorage {
     Counters.Counter private _tokenIds;
     bool public _blockAllIssuers;
     mapping(uint256 => ListedToken) private _listedTokens;
-    mapping(uint256 => mapping(address => uint256)) private _claimersIndexes;
+    mapping(uint256 => mapping(address => uint256)) private _ownersIndexes;
 
     event TokenCreated(uint256 tokenId,address issuer);
     event TokenClaim(uint256 tokenId,address recipient);
@@ -186,6 +186,7 @@ contract Rewards is ERC1155, AccessControl, ERC1155URIStorage {
         uint256 newTokenId = _tokenIds.current();
         
         _setURI(newTokenId, tokenURI);
+        _mint( address(this) ,tokenId, 1, "");
 
         ListedToken storage newListedToken = _listedTokens[newTokenId];
         newListedToken.tokenId = newTokenId;
@@ -204,14 +205,14 @@ contract Rewards is ERC1155, AccessControl, ERC1155URIStorage {
         ListedToken storage listedTokenItem = _listedTokens[tokenId];
 
         require(listedTokenItem.issuer != address(0), "Invalid token id");
-        require(_claimersIndexes[tokenId][to]  == 0, "Token already claimed by this wallet");
+        require(_ownersIndexes[tokenId][to]  == 0, "Token already claimed by this wallet");
         require(listedTokenItem.claimable == true, "Token is not claimable at this moment");
         require( isAddressWhitelisted(tokenId, to ,merkleProof), "Address is not allowed to claim the requested token");
 
         _mint(to,tokenId, 1, "");
 
-        listedTokenItem.claimers.push(to);
-        _claimersIndexes[tokenId][to] = listedTokenItem.claimers.length;
+        listedTokenItem.owners.push(to);
+        _ownersIndexes[tokenId][to] = listedTokenItem.owners.length;
 
         emit TokenClaim(tokenId, to);
     }
@@ -248,7 +249,7 @@ contract Rewards is ERC1155, AccessControl, ERC1155URIStorage {
         {
             uint currentId = i + 1;
             
-            if(_claimersIndexes[currentId][msg.sender] != 0){
+            if(_ownersIndexes[currentId][msg.sender] != 0){
                myTotal +=1;
             }
         }
@@ -260,7 +261,7 @@ contract Rewards is ERC1155, AccessControl, ERC1155URIStorage {
         {
             uint currentId = i + 1;
             
-            if(_claimersIndexes[currentId][msg.sender] != 0){
+            if(_ownersIndexes[currentId][msg.sender] != 0){
                 ListedToken storage currentItem = _listedTokens[currentId];
                 responseData[responseIndex] = currentItem;
                 responseIndex += 1;

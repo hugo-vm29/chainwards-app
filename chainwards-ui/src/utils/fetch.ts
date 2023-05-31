@@ -68,11 +68,11 @@ export const getIssuersList = (collectionId: string) => {
   return result;
 };
 
-export const changeCollectionIssuers = (data: types.ReqBodyIssuers) => {
-  const url = `${apiUrl}/collections/issuers`;
-  const result = axios.put(url, data);
-  return result;
-};
+// export const changeCollectionIssuers = (data: types.ReqBodyIssuers) => {
+//   const url = `${apiUrl}/collections/issuers`;
+//   const result = axios.put(url, data);
+//   return result;
+// };
 
 /** Tokens **/
 
@@ -85,5 +85,29 @@ export const saveTokenMetadata = (data: FormData) => {
 export const newListedToken = (data: types.NewTokenReqBody) => {
   const url = `${apiUrl}/tokens`;
   const result = axios.post(url, data);
+  return result;
+};
+
+export const getTokenInCollection = (collectionId: string, tokenId: number) => {
+  const url = `${apiUrl}/collections/${collectionId}/tokens/${tokenId}`;
+  const result = axios.get(url);
+  return result;
+};
+
+export const updateTokenClaimers = (data: types.PatchClaimersReqBody) => {
+  const url = `${apiUrl}/tokens/claimers`;
+  const result = axios.patch(url, data);
+  return result;
+};
+
+/** Merkle trees **/
+
+export const newMerkleRoot = (data: string) => {
+  const reqBody = {
+    addressList: data,
+  };
+
+  const url = `${apiUrl}/merkle/root`;
+  const result = axios.post(url, reqBody);
   return result;
 };

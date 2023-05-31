@@ -22,10 +22,8 @@ const CollectionDetail = () => {
       if (collectionId) {
         setLoadingInfo(true);
         const response = await getSingleCollectionInfo(collectionId);
-        //console.log("here", response);
         if (response.status === 200) {
           setCollectionInfo(response.data);
-          //getListedTokens(response.data.contractAddress);
         }
       }
     } catch (err) {
@@ -40,7 +38,6 @@ const CollectionDetail = () => {
 
   return (
     <Container maxWidth={false}>
-      {/* <Loader loading={loadingPage} /> */}
       {collectionInfo && (
         <>
           <Grid container wrap="nowrap" sx={{ height: '100%', overflow: 'auto' }}>
@@ -49,7 +46,10 @@ const CollectionDetail = () => {
             </Grid>
             <Grid item md={8} xs={12}>
               {collectionInfo.collectionStatus === 'active' && (
-                <TokensGallery contractAddress={collectionInfo.contractAddress} />
+                <TokensGallery
+                  contractAddress={collectionInfo.contractAddress}
+                  collectionId={collectionInfo._id}
+                />
               )}
             </Grid>
           </Grid>

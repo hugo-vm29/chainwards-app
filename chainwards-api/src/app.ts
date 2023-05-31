@@ -4,6 +4,7 @@ import config from 'config';
 import collectionRoutes from './routes/collections';
 import accountsRoutes from './routes/accounts';
 import tokenRoutes from './routes/tokens';
+import merkleTreeRoutes from './routes/merkle';
 
 /* eslint-disable @typescript-eslint/no-var-requires */
 
@@ -59,6 +60,7 @@ app.use('/health-check', (req: Request, res: Response) => res.sendStatus(200));
 app.use('/collections', collectionRoutes);
 app.use('/accounts', accountsRoutes);
 app.use('/tokens', tokenRoutes);
+app.use('/merkle', merkleTreeRoutes);
 
 const server = http.createServer(app);
 export default server;

@@ -12,22 +12,24 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const app_1 = __importDefault(require("./app"));
-const db_1 = __importDefault(require("./db"));
-const config_1 = __importDefault(require("config"));
-function main() {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            // setup DB
-            const mongoUrl = config_1.default.get('dbUrl');
-            yield db_1.default.connect(mongoUrl);
-            app_1.default.listen(8080);
-            console.log('Server is running at http://localhost:8080');
-        }
-        catch (err) {
-            console.log("API error", (err === null || err === void 0 ? void 0 : err.message) || "");
-            process.exit(1);
-        }
-    });
-}
-main();
+const express_1 = __importDefault(require("express"));
+const dappUtils_1 = require("../utils/dappUtils");
+/* eslint-disable camelcase */
+const router = express_1.default.Router({ mergeParams: true });
+router.post('/root', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const routeName = { logSource: 'post/merkle/root' };
+    try {
+        const { addressList } = req.body;
+        /** Compute merkle root hash with for a list of addresses (whitelisting functionality) **/
+        const whitelist = (0, dappUtils_1.stringToAdressArray)(addressList);
+        const merkleRoot = (0, dappUtils_1.getMerkleRoot)(whitelist);
+        return res.json({
+            merkleRoot: merkleRoot
+        });
+    }
+    catch (err) {
+        console.error(`Error (${routeName}): ${err}`);
+        return next(err);
+    }
+}));
+exports.default = router;

@@ -119,10 +119,10 @@ const NewTokenModal: FunctionComponent<NewTokenModalProps> = ({
       data.append('claimers', tokenClaimers.toLowerCase());
 
       const apiResponse = await saveTokenMetadata(data);
-      console.log('api response (metadata) --> ', apiResponse.data);
+      //console.log('api response (metadata) --> ', apiResponse.data);
 
+      /** send blockchan transaction to list new token in contract **/
       if (apiResponse.status == 200) {
-        /** send blockchan transaction to list new token in contract **/
         const contractInstance = new ethers.Contract(
           contractAddress,
           RewardsContract.abi,
@@ -130,14 +130,14 @@ const NewTokenModal: FunctionComponent<NewTokenModalProps> = ({
         );
         let tokenId = await contractInstance.getTokenId();
         tokenId = Number(tokenId) + 1;
-        console.log('tokenId', tokenId);
+        //console.log('tokenId', tokenId);
 
         const onChainTxn = await contractInstance.createToken(
           apiResponse.data.tokenURI,
           apiResponse.data.merkleRoot,
         );
-        console.log('onChainTxn', onChainTxn);
-        console.log('onChainTxn hash --> ', onChainTxn.hash);
+        //console.log('onChainTxn', onChainTxn);
+        //console.log('onChainTxn hash --> ', onChainTxn.hash);
 
         await onChainTxn.wait();
 
@@ -401,17 +401,11 @@ const propTypes = {
   onClose: PropTypes.func.isRequired,
   contractAddress: PropTypes.string.isRequired,
   onSubmitCallback: PropTypes.func.isRequired,
-  //onSubmitData: PropTypes.func.isRequired,
-  //submittingData: PropTypes.bool,
-  //networkName: PropTypes.string,
 };
 
 type NewTokenModalProps = PropTypes.InferProps<typeof propTypes>;
 NewTokenModal.propTypes = propTypes;
 
-NewTokenModal.defaultProps = {
-  //submittingData: false,
-  //networkName: '',
-};
+NewTokenModal.defaultProps = {};
 
 export default NewTokenModal;

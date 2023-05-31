@@ -10,7 +10,8 @@ async function main() {
 
     server.listen(8080);
     console.log('Server is running at http://localhost:8080');
-  } catch (err) {
+  } catch (err: any) {
+    console.log('API error', err?.message || '');
     process.exit(1);
   }
 }

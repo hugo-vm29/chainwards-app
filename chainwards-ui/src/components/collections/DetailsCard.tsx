@@ -4,7 +4,12 @@ import { FunctionComponent } from 'react';
 import Typography from '@mui/material/Typography';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
-import { formatAddress, formatDate, formatTxHash } from '../../utils/helpers';
+import {
+  formatAddress,
+  formatDate,
+  formatTxHash,
+  getBlockExplorerURI,
+} from '../../utils/helpers';
 import CardItem from './CardItem';
 import AdminActions from './AdminActions';
 import Loader from '../../components/shared/Loader';
@@ -38,6 +43,18 @@ const DetailsCard: FunctionComponent<DetailsCardProps> = ({
     return name;
   };
 
+  const getTransactionUrl = (transactionHash: string) => {
+    const baseUri = getBlockExplorerURI(collectionInfo.chainId);
+    const fullLink = `${baseUri}/tx/${transactionHash}`;
+    return fullLink;
+  };
+
+  const getContractUrl = (contractAddr: string) => {
+    const baseUri = getBlockExplorerURI(collectionInfo.chainId);
+    const fullLink = `${baseUri}/address/${contractAddr}`;
+    return fullLink;
+  };
+
   return (
     <Card variant="outlined" sx={styles.cardRoot}>
       <CardContent>
@@ -59,13 +76,13 @@ const DetailsCard: FunctionComponent<DetailsCardProps> = ({
             <CardItem
               label="Contract Address"
               data={formatAddress(collectionInfo.contractAddress)}
-              link="#"
+              link={getContractUrl(collectionInfo.contractAddress)}
               tooltipText="view on block explorer"
             />
             <CardItem
               label="Transaction:"
               data={formatTxHash(collectionInfo.transactionHash)}
-              link="#"
+              link={getTransactionUrl(collectionInfo.transactionHash)}
               tooltipText="view on block explorer"
             />
             <CardItem label="Owner" data={collectionInfo.contractOwner} />

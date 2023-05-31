@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.validateAddress = exports.getMerkleRoot = exports.getTransactionReceipt = exports.getRpcEndpoint = exports.setProvider = exports.createWallet = void 0;
+exports.stringToAdressArray = exports.validateAddress = exports.getMerkleRoot = exports.getTransactionReceipt = exports.getRpcEndpoint = exports.setProvider = exports.createWallet = void 0;
 const config_1 = __importDefault(require("config"));
 const ethers_1 = require("ethers");
 const merkletreejs_1 = require("merkletreejs");
@@ -77,7 +77,7 @@ const getTransactionReceipt = (txHash) => __awaiter(void 0, void 0, void 0, func
 });
 exports.getTransactionReceipt = getTransactionReceipt;
 const getMerkleRoot = (whitelist) => {
-    let leaves = whitelist.map((addr) => ethers_1.ethers.keccak256(addr));
+    const leaves = whitelist.map((addr) => ethers_1.ethers.keccak256(addr));
     const merkleTree = new merkletreejs_1.MerkleTree(leaves, ethers_1.ethers.keccak256, { sortPairs: true });
     const merkleRootHash = merkleTree.getHexRoot();
     return merkleRootHash;
@@ -87,6 +87,17 @@ const validateAddress = (address) => {
     return ethers_1.ethers.isAddress(address);
 };
 exports.validateAddress = validateAddress;
+const stringToAdressArray = (data) => {
+    const addresses = data.trim().split(',');
+    const whitelist = [];
+    addresses.forEach((item) => {
+        if (item !== '' && (0, exports.validateAddress)(item)) {
+            whitelist.push(item.toLocaleLowerCase());
+        }
+    });
+    return whitelist;
+};
+exports.stringToAdressArray = stringToAdressArray;
 // const getAlchemyConfig = (chainId: number) => {
 //   let network = Network.ETH_GOERLI;
 //   let apiKey =  config.get<string>("goerli_api_key");

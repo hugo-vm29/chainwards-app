@@ -65,10 +65,14 @@ export type ListedToken = {
 
 export type TokenGalleryItem = {
   tokenId: number;
-  name: string;
-  owners: string[];
-  image: string;
+  issuer: string;
   claimable: boolean;
+  owners: string[];
+  name: string;
+  image: string;
+  whitelist: string[];
+  chainId: number;
+  lastUpdated: string | Date;
 };
 
 export type NewTokenReqBody = {
@@ -80,20 +84,10 @@ export type NewTokenReqBody = {
   claimers: string;
 };
 
-// to review -->
-export type CollectionInfoType = {
-  _id: string;
-  collection_name: string;
-  collection_description: string;
-  contract_address: string;
-  transaction_status: string;
-  transaction_hash: string;
-  created_on: string;
-  deployed_by: string;
-  chainId: number;
-};
-
-export type ReqBodyIssuers = {
-  collection_id: string;
-  new_list: string[];
+export type PatchClaimersReqBody = {
+  tokenId: number;
+  collectionId: string;
+  newClaimers: string;
+  from: string;
+  txnHash: string;
 };

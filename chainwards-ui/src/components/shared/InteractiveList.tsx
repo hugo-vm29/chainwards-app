@@ -8,7 +8,6 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import Collapse from '@mui/material/Collapse';
 import TextField from '@mui/material/TextField';
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
-import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import { TransitionGroup } from 'react-transition-group';
 
@@ -22,6 +21,7 @@ const styles = {
 /* eslint-disable @typescript-eslint/no-empty-function */
 const InteractiveList: FunctionComponent<InteractiveListProps> = ({
   itemsList,
+  itemsIcon,
   handleAddItem,
   handleRemoveItem,
 }) => {
@@ -52,9 +52,9 @@ const InteractiveList: FunctionComponent<InteractiveListProps> = ({
           </IconButton>
         }
       >
-        <ListItemIcon sx={styles.listItemIcon}>
-          <AccountBalanceWalletIcon />
-        </ListItemIcon>
+        {itemsIcon !== null && (
+          <ListItemIcon sx={styles.listItemIcon}>{itemsIcon}</ListItemIcon>
+        )}
         <ListItemText primary={text} />
       </ListItem>
     );
@@ -100,15 +100,18 @@ const propTypes = {
   ]),
   handleRemoveItem: PropTypes.func.isRequired,
   handleAddItem: PropTypes.func.isRequired,
+  itemsIcon: PropTypes.node,
 };
 
 type InteractiveListProps = PropTypes.InferProps<typeof propTypes>;
 
 InteractiveList.propTypes = propTypes;
+
 InteractiveList.defaultProps = {
   itemsList: [],
   handleRemoveItem: () => {},
   handleAddItem: () => {},
+  itemsIcon: null,
 };
 
 export default InteractiveList;

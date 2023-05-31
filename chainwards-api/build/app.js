@@ -9,6 +9,7 @@ const config_1 = __importDefault(require("config"));
 const collections_1 = __importDefault(require("./routes/collections"));
 const accounts_1 = __importDefault(require("./routes/accounts"));
 const tokens_1 = __importDefault(require("./routes/tokens"));
+const merkle_1 = __importDefault(require("./routes/merkle"));
 /* eslint-disable @typescript-eslint/no-var-requires */
 const http = require('http');
 const app = (0, express_1.default)();
@@ -51,5 +52,6 @@ app.use('/health-check', (req, res) => res.sendStatus(200));
 app.use('/collections', collections_1.default);
 app.use('/accounts', accounts_1.default);
 app.use('/tokens', tokens_1.default);
+app.use('/merkle', merkle_1.default);
 const server = http.createServer(app);
 exports.default = server;

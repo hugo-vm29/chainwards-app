@@ -78,6 +78,19 @@ export const validateAddress = (address: string) => {
   return ethers.isAddress(address);
 };
 
+export const stringToAdressArray = (data: string) => {
+  const addresses = data.trim().split(',');
+  const whitelist: string[] = [];
+
+  addresses.forEach((item: string) => {
+    if (item !== '' && validateAddress(item)) {
+      whitelist.push(item.toLocaleLowerCase());
+    }
+  });
+
+  return whitelist;
+};
+
 // const getAlchemyConfig = (chainId: number) => {
 
 //   let network = Network.ETH_GOERLI;

@@ -189,7 +189,7 @@ router.get('/findByWallet/:pubKey', (req, res, next) => __awaiter(void 0, void 0
             },
             {
                 $match: {
-                    'collectionInfo.status': { $ne: "obsolete" },
+                    'collectionInfo.status': { $ne: 'obsolete' },
                 },
             },
             {
@@ -226,7 +226,7 @@ router.get('/:collectionId', (req, res, next) => __awaiter(void 0, void 0, void 
             .aggregate([
             {
                 $match: {
-                    _id: new mongodb_1.ObjectId(collectionId)
+                    _id: new mongodb_1.ObjectId(collectionId),
                 },
             },
             {
@@ -260,13 +260,25 @@ router.get('/:collectionId', (req, res, next) => __awaiter(void 0, void 0, void 
         ])
             .toArray();
         if (dbReponse.length === 0)
-            return res.status(404).send({ error: "Collection not found" });
+            return res.status(404).send({ error: 'Collection not found' });
         return res.json(dbReponse[0]);
     }
     catch (err) {
         console.error(`Error: ${err}`);
         return next(err);
     }
+}));
+router.get('/:collectionId/tokens/:tokenId', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { collectionId, tokenId } = req.params;
+    const findToken = yield db_1.default.collection('tokens').findOne({
+        tokenId: Number(tokenId),
+        collectionId: new mongodb_1.ObjectId(collectionId)
+    });
+    if (!findToken)
+        return res
+            .status(400)
+            .send({ error: 'Token not found' });
+    return res.json(findToken);
 }));
 /*
 router.get('/issuers/:collectionId',  async (req: Request, res: Response, next) => {
