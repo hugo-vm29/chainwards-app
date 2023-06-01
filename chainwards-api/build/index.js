@@ -25,7 +25,7 @@ function main() {
             console.log('Server is running at http://localhost:8080');
         }
         catch (err) {
-            console.log("API error", (err === null || err === void 0 ? void 0 : err.message) || "");
+            console.log('API error', (err === null || err === void 0 ? void 0 : err.message) || '');
             process.exit(1);
         }
     });

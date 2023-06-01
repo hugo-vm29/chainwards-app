@@ -6,6 +6,8 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
 import Box from '@mui/material/Box';
 import { FunctionComponent } from 'react';
 
@@ -17,6 +19,7 @@ const Modal: FunctionComponent<ModalProps> = ({
   handleClose,
   actions,
   children,
+  closeButton,
   ...props
 }) => {
   let leftActions: any = [];
@@ -49,6 +52,20 @@ const Modal: FunctionComponent<ModalProps> = ({
         }}
       >
         {title}
+        {closeButton == true ? (
+          <IconButton
+            aria-label="close"
+            onClick={handleClose}
+            sx={{
+              position: 'absolute',
+              right: 8,
+              top: 8,
+              color: (theme) => theme.palette.grey[500],
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
+        ) : null}
       </DialogTitle>
       <DialogContent>{children}</DialogContent>
       {actions && actions.length > 0 && (
@@ -114,6 +131,7 @@ const propTypes = {
       disabled: PropTypes.bool,
     }),
   ),
+  closeButton: PropTypes.bool,
 };
 
 type ModalProps = PropTypes.InferProps<typeof propTypes>;
@@ -138,6 +156,7 @@ Modal.defaultProps = {
       color: 'primary',
     },
   ],
+  closeButton: false,
 };
 
 export default Modal;

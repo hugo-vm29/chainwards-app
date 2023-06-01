@@ -24,7 +24,7 @@ router.post('/root', (req, res, next) => __awaiter(void 0, void 0, void 0, funct
         const whitelist = (0, dappUtils_1.stringToAdressArray)(addressList);
         const merkleRoot = (0, dappUtils_1.getMerkleRoot)(whitelist);
         return res.json({
-            merkleRoot: merkleRoot
+            merkleRoot: merkleRoot,
         });
     }
     catch (err) {

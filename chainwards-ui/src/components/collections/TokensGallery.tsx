@@ -32,6 +32,7 @@ import * as types from '../../utils/types';
 import Loader from '../shared/Loader';
 import NewTokenModal from './modals/NewTokenModal';
 import ViewClaimersModal from './modals/ViewClaimersModal';
+import ViewOwnersModal from './modals/ViewOwnersModal';
 
 const styles = {
   rootContainer: {
@@ -69,6 +70,7 @@ const TokensGallery: FunctionComponent<TokensGalleryProps> = ({
   const [selectedToken, setSelectedToken] = useState<types.TokenGalleryItem | null>(null);
   const [visiblePanel, setVisiblePanel] = useState(1);
   const [viewClaimersModal, setViewClaimersModal] = useState(false);
+  const [viewOwnersModal, setViewOwnersModal] = useState(false);
 
   const processListedToken = async (
     contractInstance: Contract,
@@ -353,6 +355,9 @@ const TokensGallery: FunctionComponent<TokensGalleryProps> = ({
                             size="large"
                             sx={styles.iconButtons}
                             startIcon={<PeopleOutlineIcon />}
+                            onClick={() => {
+                              setViewOwnersModal(true);
+                            }}
                           >
                             {`${selectedToken.owners.length} owners`}
                           </Button>
@@ -416,6 +421,14 @@ const TokensGallery: FunctionComponent<TokensGalleryProps> = ({
         contractAddress={contractAddress}
         collectionId={collectionId}
         submitCallback={onChangeClaimers}
+      />
+
+      <ViewOwnersModal
+        openModal={viewOwnersModal}
+        onClose={() => {
+          setViewOwnersModal(false);
+        }}
+        ownersList={selectedToken?.owners || []}
       />
     </Box>
   );

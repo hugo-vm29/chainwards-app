@@ -78,10 +78,10 @@ router.post('/', (req, res, next) => __awaiter(void 0, void 0, void 0, function*
     const routeName = { logSource: 'post/tokens' };
     try {
         const { tokenId, issuer, contract, txnHash, chainId, claimers } = req.body;
-        const findCollection = yield db_1.default.collection('collections').findOne({ 'contractAddress': contract }, {
+        const findCollection = yield db_1.default.collection('collections').findOne({ contractAddress: contract }, {
             projection: {
                 _id: 1,
-                name: 1
+                name: 1,
             },
         });
         if (!findCollection)
@@ -114,13 +114,13 @@ router.post('/', (req, res, next) => __awaiter(void 0, void 0, void 0, function*
             chainId: Number(chainId),
             createdOn: new Date(),
             lastUpdated: new Date(),
-            lastUpdateTransaction: txnResponse.insertedId
+            lastUpdateTransaction: txnResponse.insertedId,
         };
         yield db_1.default.collection('tokens').insertOne(tokenObject);
         return res.json({
             tokenId: tokenId,
             transactionId: txnResponse.insertedId,
-            collectionId: tokenObject.collectionId
+            collectionId: tokenObject.collectionId,
         });
     }
     catch (err) {
@@ -138,10 +138,10 @@ router.patch('/claimers', (req, res, next) => __awaiter(void 0, void 0, void 0, 
         if (!txnHash)
             return res.status(400).send({ error: 'A transaction hash is required' });
         const collectionUniqueId = new mongodb_1.ObjectId(collectionId);
-        const findCollection = yield db_1.default.collection('collections').findOne({ '_id': collectionUniqueId }, {
+        const findCollection = yield db_1.default.collection('collections').findOne({ _id: collectionUniqueId }, {
             projection: {
                 _id: 1,
-                contractAddress: 1
+                contractAddress: 1,
             },
         });
         if (!findCollection)
@@ -158,25 +158,25 @@ router.patch('/claimers', (req, res, next) => __awaiter(void 0, void 0, void 0, 
         const whitelist = (0, dappUtils_1.stringToAdressArray)(newClaimers);
         const queryResponse = yield db_1.default.collection('tokens').findOneAndUpdate({
             tokenId: Number(tokenId),
-            collectionId: collectionUniqueId
+            collectionId: collectionUniqueId,
         }, {
             $set: {
                 whitelist: whitelist,
                 lastUpdated: new Date(),
-                lastUpdateTransaction: txnResponse.insertedId
+                lastUpdateTransaction: txnResponse.insertedId,
             },
         }, {
             returnDocument: 'after',
             projection: {
                 tokenId: 1,
-                whitelist: 1
+                whitelist: 1,
             },
         });
         const updatedDocument = queryResponse.value;
         return res.json({
             tokenId: updatedDocument.tokenId,
             collectionId: collectionUniqueId,
-            whitelist: updatedDocument.whitelist
+            whitelist: updatedDocument.whitelist,
         });
     }
     catch (err) {
