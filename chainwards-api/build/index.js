@@ -15,14 +15,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const app_1 = __importDefault(require("./app"));
 const db_1 = __importDefault(require("./db"));
 const config_1 = __importDefault(require("config"));
+const port = 8080;
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             // setup DB
             const mongoUrl = config_1.default.get('dbUrl');
             yield db_1.default.connect(mongoUrl);
-            app_1.default.listen(8080);
-            console.log('Server is running at http://localhost:8080');
+            app_1.default.listen(port);
+            console.log(`Server is listening on port ${port}`);
         }
         catch (err) {
             console.log('API error', (err === null || err === void 0 ? void 0 : err.message) || '');

@@ -14,9 +14,6 @@ const app: Express = express();
 /** CORS setup **/
 const allowedDomains = [...config.get<string>('allowedDomains').split(',')];
 
-//type CustomOrigin = (requestOrigin: string | undefined, callback: (err: Error | null, origin?: StaticOrigin) => void) => void;
-
-// Set up a root domain and check against it:
 const corsOptions = {
   origin: function (
     requestOrigin: string | undefined,
@@ -33,21 +30,6 @@ const corsOptions = {
   },
   credentials: true,
 };
-
-// const corsOptions = {
-//   origin(origin: string, callback: (arg0: Error | null, arg1: boolean | undefined) => void) {
-//     if ( !origin || allowedDomains.some( domain => {
-//         const hostName = new URL(origin).hostname;
-//         return domain === hostName;
-//       })
-//     ) {
-//       callback(null, true);
-//     } else {
-//       callback(new Error('Not allowed by CORS'), false);
-//     }
-//   },
-//   credentials: true,
-// };
 
 app.use(cors(corsOptions));
 

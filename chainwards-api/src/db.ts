@@ -1,7 +1,7 @@
-import { MongoClient } from 'mongodb';
+import { MongoClient, Db } from 'mongodb';
 
-let db: any = null;
-let client: any = null;
+let db: Db;
+let client: MongoClient;
 
 export default {
   connect: async (connectionUrl: string) => {
@@ -21,5 +21,5 @@ export default {
 
   collection: (collectionName: string) => db.collection(collectionName),
   get: () => db,
-  close: () => client.close(),
+  close: () => client.close()
 };

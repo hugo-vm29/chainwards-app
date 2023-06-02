@@ -15,6 +15,7 @@ import Link from '@mui/material/Link';
 import { formatAddress, formatDate, getNetworkName } from '../../utils/helpers';
 import PolygonIcon from '../../assets/PolygonIcon';
 import EthereumIcon from '../../assets/EthereumIcon';
+import * as types from '../../utils/types';
 
 /* eslint-disable jsx-a11y/anchor-is-valid, @typescript-eslint/no-empty-function */
 
@@ -57,12 +58,13 @@ const styles = {
   },
 };
 
-const CollectionsTable: FunctionComponent<CollectionsTableProps> = ({
+const CollectionsTable = ({
   loading,
   emptyMessage,
   handlePending,
   data,
-}) => {
+}: CollectionsTableProps) => {
+
   const navigate = useNavigate();
 
   const getStatusIcon = (statusFlag: string) => {
@@ -89,7 +91,7 @@ const CollectionsTable: FunctionComponent<CollectionsTableProps> = ({
 
   const columns = [
     {
-      name: 'collectionName',
+      name: 'name',
       label: 'Collection Name',
       options: {
         customBodyRender: (value: string, tableMeta: any) => {
@@ -116,7 +118,7 @@ const CollectionsTable: FunctionComponent<CollectionsTableProps> = ({
       },
     },
     {
-      name: 'collectionSymbol',
+      name: 'symbol',
       label: 'Symbol',
       options: {
         customBodyRender: (value: string) => {
@@ -144,12 +146,12 @@ const CollectionsTable: FunctionComponent<CollectionsTableProps> = ({
       label: 'Network',
       options: {
         filter: false,
-        customBodyRender: (value: Date) => {
+        customBodyRender: (value: number) => {
           return (
             <Box display="flex" textAlign="center">
-              {getNetworkIcon(Number(value))}
+              {getNetworkIcon(value)}
               <Typography sx={{ marginLeft: 1 }}>
-                {getNetworkName(Number(value))}{' '}
+                {getNetworkName(value)}{' '}
               </Typography>
             </Box>
           );
@@ -168,12 +170,13 @@ const CollectionsTable: FunctionComponent<CollectionsTableProps> = ({
       },
     },
     {
-      name: 'transactionStatus',
+      name: 'transactionInfo.status',
       label: 'Deploy status',
       options: {
         filter: false,
         customBodyRender: (value: string, tableMeta: any) => {
           const transactionId = tableMeta.rowData[7];
+          console.log("transactionId",transactionId);
           return (
             <Tooltip
               title={value == 'pending' ? 'click to refresh' : ''}
@@ -196,14 +199,14 @@ const CollectionsTable: FunctionComponent<CollectionsTableProps> = ({
       },
     },
     {
-      name: 'collectionId',
+      name: '_id',
       options: {
         filter: false,
         display: false,
       },
     },
     {
-      name: '_id',
+      name: 'transactionInfo._id',
       options: {
         filter: false,
         display: false,
@@ -212,6 +215,7 @@ const CollectionsTable: FunctionComponent<CollectionsTableProps> = ({
   ];
 
   const defaultTableOptions: MUIDataTableOptions = {
+    enableNestedDataAccess: '.',
     elevation: 0,
     download: false,
     print: false,
@@ -244,16 +248,13 @@ const CollectionsTable: FunctionComponent<CollectionsTableProps> = ({
   );
 };
 
-const propTypes = {
-  emptyMessage: PropTypes.string,
-  loading: PropTypes.bool.isRequired,
-  data: PropTypes.arrayOf(PropTypes.shape({}).isRequired).isRequired,
-  handlePending: PropTypes.func.isRequired,
-};
 
-type CollectionsTableProps = PropTypes.InferProps<typeof propTypes>;
-
-CollectionsTable.propTypes = propTypes;
+type CollectionsTableProps = {
+  data: types.CollectionsRow [],
+  emptyMessage?: string;
+  loading: boolean;
+  handlePending: ( data:string) => void;
+}
 
 CollectionsTable.defaultProps = {
   loading: false,

@@ -210,9 +210,9 @@ router.patch('/claimers', async (req: Request, res: Response, next) => {
     const updatedDocument = queryResponse.value;
 
     return res.json({
-      tokenId: updatedDocument.tokenId,
+      tokenId: updatedDocument?.tokenId,
       collectionId: collectionUniqueId,
-      whitelist: updatedDocument.whitelist,
+      whitelist: updatedDocument?.whitelist,
     });
   } catch (err: any) {
     console.error(`Error (${routeName}): ${err}`);

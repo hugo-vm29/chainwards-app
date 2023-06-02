@@ -16,6 +16,8 @@ const express_1 = __importDefault(require("express"));
 const db_1 = __importDefault(require("../db"));
 const dappUtils_1 = require("../utils/dappUtils");
 const mongodb_1 = require("mongodb");
+const dbHelper_1 = require("../utils/dbHelper");
+const dappUtils_2 = require("../utils/dappUtils");
 /* eslint-disable camelcase */
 const router = express_1.default.Router({ mergeParams: true });
 router.post('/', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -62,7 +64,8 @@ router.post('/', (req, res, next) => __awaiter(void 0, void 0, void 0, function*
             status: 'deploying',
             blockIssuers: false,
             createdOn: new Date(),
-            issuers: [deployAddress],
+            owner: deployAddress,
+            issuers: [],
         };
         const collectionResponse = yield db_1.default
             .collection('collections')
@@ -130,12 +133,12 @@ router.get('/transaction/status/:txnId', (req, res, next) => __awaiter(void 0, v
                 const updatedTxn = queryUpdateTxn.value;
                 const updatedCollection = queryUpdateCollection.value;
                 const responseData = {
-                    _id: updatedTxn._id,
-                    collectionId: updatedCollection._id,
-                    contractAddress: updatedCollection.contractAddress,
-                    chainId: updatedTxn.chainId,
-                    transactionHash: updatedTxn.transactionHash,
-                    transactionStatus: updatedTxn.status,
+                    _id: updatedTxn === null || updatedTxn === void 0 ? void 0 : updatedTxn._id,
+                    collectionId: updatedCollection === null || updatedCollection === void 0 ? void 0 : updatedCollection._id,
+                    contractAddress: updatedCollection === null || updatedCollection === void 0 ? void 0 : updatedCollection.contractAddress,
+                    chainId: updatedTxn === null || updatedTxn === void 0 ? void 0 : updatedTxn.chainId,
+                    transactionHash: updatedTxn === null || updatedTxn === void 0 ? void 0 : updatedTxn.transactionHash,
+                    transactionStatus: updatedTxn === null || updatedTxn === void 0 ? void 0 : updatedTxn.status,
                 };
                 return res.json(responseData);
             }
@@ -149,8 +152,8 @@ router.get('/transaction/status/:txnId', (req, res, next) => __awaiter(void 0, v
             });
             return res.json({
                 _id: findTxn._id,
-                collectionId: findCollection._id,
-                contractAddress: findCollection.contractAddress,
+                collectionId: findCollection === null || findCollection === void 0 ? void 0 : findCollection._id,
+                contractAddress: findCollection === null || findCollection === void 0 ? void 0 : findCollection.contractAddress,
                 chainId: findTxn.chainId,
                 transactionHash: findTxn.transactionHash,
                 transactionStatus: findTxn.status,
@@ -165,49 +168,21 @@ router.get('/transaction/status/:txnId', (req, res, next) => __awaiter(void 0, v
 router.get('/findByWallet/:pubKey', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { pubKey } = req.params;
+        let aggregationPipleine = [
+            {
+                $match: {
+                    $or: [
+                        { owner: pubKey },
+                        { issuers: { $in: [pubKey] } }
+                    ],
+                    'status': "active"
+                }
+            },
+            ...(0, dbHelper_1.getCollectionPipeline)()
+        ];
         const dbReponse = yield db_1.default
-            .collection('transactions')
-            .aggregate([
-            {
-                $match: {
-                    from: pubKey.toLowerCase(),
-                    transactionType: 'DEPLOY',
-                },
-            },
-            {
-                $lookup: {
-                    from: 'collections',
-                    localField: 'contractAddress',
-                    foreignField: 'contractAddress',
-                    as: 'collectionInfo',
-                },
-            },
-            {
-                $unwind: {
-                    path: '$collectionInfo',
-                },
-            },
-            {
-                $match: {
-                    'collectionInfo.status': { $ne: 'obsolete' },
-                },
-            },
-            {
-                $group: {
-                    _id: '$_id',
-                    collectionId: { $first: '$collectionInfo._id' },
-                    collectionName: { $first: '$collectionInfo.name' },
-                    collectionSymbol: { $first: '$collectionInfo.symbol' },
-                    contractAddress: { $first: '$collectionInfo.contractAddress' },
-                    contractOwner: { $first: '$from' },
-                    chainId: { $first: '$chainId' },
-                    transactionHash: { $first: '$transactionHash' },
-                    transactionStatus: { $first: '$status' },
-                    createdOn: { $first: '$collectionInfo.createdOn' },
-                },
-            },
-            { $sort: { createdOn: -1 } },
-        ])
+            .collection('collections')
+            .aggregate(aggregationPipleine)
             .toArray();
         if (dbReponse.length == 0)
             return res.json([]);
@@ -221,43 +196,17 @@ router.get('/findByWallet/:pubKey', (req, res, next) => __awaiter(void 0, void 0
 router.get('/:collectionId', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { collectionId } = req.params;
-        const dbReponse = yield db_1.default
-            .collection('collections')
-            .aggregate([
+        let aggregationPipleine = [
             {
                 $match: {
                     _id: new mongodb_1.ObjectId(collectionId),
-                },
+                }
             },
-            {
-                $lookup: {
-                    from: 'transactions',
-                    localField: 'transactionId',
-                    foreignField: '_id',
-                    as: 'transactionInfo',
-                },
-            },
-            {
-                $unwind: {
-                    path: '$transactionInfo',
-                },
-            },
-            {
-                $group: {
-                    _id: '$_id',
-                    collectionName: { $first: '$name' },
-                    collectiondescription: { $first: '$description' },
-                    collectionSymbol: { $first: '$symbol' },
-                    contractAddress: { $first: '$contractAddress' },
-                    contractOwner: { $first: '$transactionInfo.from' },
-                    chainId: { $first: '$transactionInfo.chainId' },
-                    collectionStatus: { $first: '$status' },
-                    blockIssuers: { $first: '$blockIssuers' },
-                    transactionHash: { $first: '$transactionInfo.transactionHash' },
-                    createdOn: { $first: '$createdOn' },
-                },
-            },
-        ])
+            ...(0, dbHelper_1.getCollectionPipeline)()
+        ];
+        const dbReponse = yield db_1.default
+            .collection('collections')
+            .aggregate(aggregationPipleine)
             .toArray();
         if (dbReponse.length === 0)
             return res.status(404).send({ error: 'Collection not found' });
@@ -285,84 +234,79 @@ router.get('/:collectionId/tokens/:tokenId', (req, res, next) => __awaiter(void 
         return next(err);
     }
 }));
-/*
-router.get('/issuers/:collectionId',  async (req: Request, res: Response, next) => {
-
-  try {
-   
-    const { collectionId } = req.params;
-
-    if(!collectionId)
-      return res.status(400).send({ error: "Missing required query parameters" });
-
-    const collectonData = await db
-      .collection('contracts')
-      .findOne(
-        { '_id': new ObjectId(collectionId) },
-        {
-          projection: {
-            _id: 1,
-            name: 1,
-            issuers: 1
-          },
-        }
-      )
-
-    collectonData.issuers  = [
-      '0x0000000000000000000000000000000000000001',
-      '0x0000000000000000000000000000000000000002',
-      '0x0000000000000000000000000000000000000003',
-      '0x0000000000000000000000000000000000000004',
-      '0x0000000000000000000000000000000000000005',
-      '0x0000000000000000000000000000000000000006',
-      '0x0000000000000000000000000000000000000007',
-      '0x0000000000000000000000000000000000000008',
-      '0x0000000000000000000000000000000000000009',
-      '0x0000000000000000000000000000000000000010',
-    ];
-
-    return res.json(collectonData);
-
-  } catch (err) {
-    console.error(`Error: ${err}`);
-    return next(err);
-  }
-});
-
-router.put('/issuers',  async (req: Request, res: Response, next) => {
-
-  try {
-   
-    const { collection_id, new_list} = req.body;
-
-    if(!collection_id || !new_list)
-      return res.status(400).send({ error: "Missing required query parameters" });
-
-    const response = await db
-      .collection('contracts')
-      .findOneAndUpdate(
-        { '_id': new ObjectId(collection_id) },
-        {
-          $set: {
-            issuers: new_list
-          }
-        },
-        {
-          returnDocument: 'after',
-          projection: {
-            _id: 1,
-            name: 1,
-            issuers: 1
-          },
-        },
-      );
-
-    return res.json(response);
-
-  } catch (err) {
-    console.error(`Error: ${err}`);
-    return next(err);
-  }
-});
-*/
+router.get('/issuers/:collectionId', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const routeName = 'get/collections/issuers/:collectionId';
+    try {
+        const { collectionId } = req.params;
+        const findCollection = yield db_1.default.collection('collections').findOne({ _id: new mongodb_1.ObjectId(collectionId) }, {
+            projection: {
+                _id: 1,
+                name: 1,
+                issuers: 1,
+            },
+        });
+        if (!findCollection)
+            return res.status(404).send({ error: 'Collection not found' });
+        return res.json(findCollection);
+    }
+    catch (err) {
+        console.error(`Error (${routeName}): ${err}`);
+        return next(err);
+    }
+}));
+router.patch('/issuers', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const routeName = 'patch/collections/issuers';
+    try {
+        /** Save a new list of issuers for the collection AFTER the
+         * corresponding roles have been changed on chain (i.e. blockchain transaction have been confirmed)
+        * **/
+        const { collectionId, newIssuers, from, txnHash } = req.body;
+        if (!txnHash)
+            return res.status(400).send({ error: 'A transaction hash is required' });
+        const collectionUniqueId = new mongodb_1.ObjectId(collectionId);
+        const findCollection = yield db_1.default.collection('collections').findOne({ _id: collectionUniqueId }, {
+            projection: {
+                _id: 1,
+                contractAddress: 1,
+            },
+        });
+        if (!findCollection)
+            return res.status(404).send({ error: 'Collection not found' });
+        const txnObject = {
+            from: from.toLowerCase(),
+            to: findCollection.contractAddress,
+            transactionHash: txnHash,
+            status: 'completed',
+            transactionType: 'GRANT_ROLE',
+            timestamp: new Date(),
+        };
+        const txnResponse = yield db_1.default.collection('transactions').insertOne(txnObject);
+        const newList = (0, dappUtils_2.stringToAdressArray)(newIssuers);
+        const queryResponse = yield db_1.default.collection('collections').findOneAndUpdate({
+            _id: collectionUniqueId
+        }, {
+            $set: {
+                issuers: newList,
+                lastUpdated: new Date(),
+                lastUpdateTransaction: txnResponse.insertedId,
+            },
+        }, {
+            returnDocument: 'after',
+            projection: {
+                _id: 1,
+                name: 1,
+                issuers: 1,
+            },
+        });
+        const updatedDocument = queryResponse.value;
+        return res.json({
+            collectionId: updatedDocument === null || updatedDocument === void 0 ? void 0 : updatedDocument._id,
+            issuers: updatedDocument === null || updatedDocument === void 0 ? void 0 : updatedDocument.issuers
+        });
+    }
+    catch (err) {
+        console.error(`Error (${routeName}): ${err}`);
+        return next(err);
+    }
+}));
 exports.default = router;

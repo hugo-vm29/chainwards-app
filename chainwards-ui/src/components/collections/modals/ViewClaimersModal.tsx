@@ -14,22 +14,6 @@ import { useMetamaskContext } from '../../../contexts/MetamaskProvider';
 import RewardsContract from '../../../contracts/Rewards.json';
 import * as types from '../../../utils/types';
 
-/*const styles = {
-  labels: {
-    fontWeight: "500",
-  },
-  inputs: {
-    mb: 2,
-  },
-  imageLoader: {
-    position: "relative", 
-    display: "block", 
-    backgroundColor: "transparent",
-    width: "auto",
-    ml: 2
-  }
-}*/
-
 const ViewClaimersModal: FunctionComponent<ViewClaimersModalProps> = ({
   tokenInfo,
   contractAddress,
@@ -57,7 +41,8 @@ const ViewClaimersModal: FunctionComponent<ViewClaimersModalProps> = ({
 
   const submitChangeClaimers = async () => {
     try {
-      //setSubmittingData(true);
+      
+      setSubmittingData(true);
       let tokenClaimers = claimersList.toString();
       tokenClaimers +=
         tokenClaimers === '' ? tokenInfo.tokenIssuer : ',' + tokenInfo.tokenIssuer;
@@ -90,8 +75,10 @@ const ViewClaimersModal: FunctionComponent<ViewClaimersModalProps> = ({
         };
 
         const patchRequest = await updateTokenClaimers(body);
+        setSubmittingData(false);
         onClose();
         submitCallback(tokenInfo.tokenId, patchRequest.data.whitelist);
+
       }
     } catch (err: any) {
       console.error('Unable to update claimers', err?.message || '');

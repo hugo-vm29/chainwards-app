@@ -10,8 +10,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongodb_1 = require("mongodb");
-let db = null;
-let client = null;
+let db;
+let client;
 exports.default = {
     connect: (connectionUrl) => __awaiter(void 0, void 0, void 0, function* () {
         if (db)
@@ -27,5 +27,5 @@ exports.default = {
     }),
     collection: (collectionName) => db.collection(collectionName),
     get: () => db,
-    close: () => client.close(),
+    close: () => client.close()
 };

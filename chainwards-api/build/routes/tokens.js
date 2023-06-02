@@ -174,9 +174,9 @@ router.patch('/claimers', (req, res, next) => __awaiter(void 0, void 0, void 0, 
         });
         const updatedDocument = queryResponse.value;
         return res.json({
-            tokenId: updatedDocument.tokenId,
+            tokenId: updatedDocument === null || updatedDocument === void 0 ? void 0 : updatedDocument.tokenId,
             collectionId: collectionUniqueId,
-            whitelist: updatedDocument.whitelist,
+            whitelist: updatedDocument === null || updatedDocument === void 0 ? void 0 : updatedDocument.whitelist,
         });
     }
     catch (err) {

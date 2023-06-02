@@ -103,16 +103,19 @@ const Collections = () => {
 
       if (response.status == 200) {
         if (response.data.transactionStatus == 'completed') {
+
           const newData: types.CollectionsRow[] = [...collectionsList];
           const findRow: types.CollectionsRow | undefined = newData.find(
-            (x) => x._id == transactionId,
+            (x) => x.transactionInfo._id == transactionId,
           );
           if (findRow) {
             findRow.contractAddress = response.data.contractAddress;
-            findRow.transactionStatus = response.data.transactionStatus;
+            findRow.transactionInfo.status = response.data.transactionStatus;
             setCollectionsList(newData);
           }
+
         }
+        
       }
     } catch (err: any) {
       console.log('An error has ocurred, please refresh page', err?.message || '');

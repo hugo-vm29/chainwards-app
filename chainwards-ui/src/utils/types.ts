@@ -19,15 +19,20 @@ export type NewCollectionFormValues = {
 
 export type CollectionsRow = {
   _id: string;
-  collectionId: string;
-  collectionName: string;
-  collectionSymbol: string;
+  name: string;
+  description: string;
+  symbol: string;
   contractAddress: string;
-  contractOwner: string;
-  chainId: string;
-  transactionHash: string;
-  transactionStatus: string;
-  createdOn: string;
+  owner: string;
+  status: string;
+  blockIssuers: boolean,
+  createdOn: Date;
+  chainId: number;
+  transactionInfo : {
+    _id: string;
+    transactionHash: string;
+    status: string
+  }
 };
 
 export type NewCollectionReqBody = {
@@ -54,6 +59,16 @@ export type CollectionDetail = {
   transactionHash: string;
   createdOn: Date;
 };
+
+export type PatchIssuersReqBody = {
+  collectionId: string;
+  newIssuers: string;
+  from: string;
+  txnHash: string;
+};
+
+
+/** tokens **/
 
 export type ListedToken = {
   tokenId: number;

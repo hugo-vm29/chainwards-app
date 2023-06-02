@@ -133,7 +133,7 @@ const TokensGallery: FunctionComponent<TokensGalleryProps> = ({
         });
 
         const listedTokens = await Promise.all(promesas);
-        console.log('listedTokens --->', listedTokens);
+        //console.log('listedTokens --->', listedTokens);
         setTotalTokens(listedTokens.length);
         setListedTokens(listedTokens);
         setLoadingListedTokens(false);

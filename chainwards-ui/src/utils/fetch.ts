@@ -36,7 +36,6 @@ export const createNewAccount = (username: string) => {
 /** Collections (contracts) * */
 
 export const getCollectionsForAccount = (address: string, chainId: number) => {
-  //collections/find/0xb8790386c88565e681b708bc227b76cd0733c603?chainId=80001
   const url = `${apiUrl}/collections/findByWallet/${address}?chainId=${chainId}`;
   const result = axios.get(url);
   return result;
@@ -68,11 +67,11 @@ export const getIssuersList = (collectionId: string) => {
   return result;
 };
 
-// export const changeCollectionIssuers = (data: types.ReqBodyIssuers) => {
-//   const url = `${apiUrl}/collections/issuers`;
-//   const result = axios.put(url, data);
-//   return result;
-// };
+export const updateCollectionIssuers = (data: types.PatchIssuersReqBody) => {
+  const url = `${apiUrl}/collections/issuers`;
+  const result = axios.patch(url, data);
+  return result;
+};
 
 /** Tokens **/
 

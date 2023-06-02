@@ -13,6 +13,8 @@ import {
 import CardItem from './CardItem';
 import AdminActions from './AdminActions';
 import Loader from '../../components/shared/Loader';
+import * as types from '../../utils/types';
+
 
 const styles = {
   cardRoot: {
@@ -29,10 +31,8 @@ const styles = {
   },
 };
 
-const DetailsCard: FunctionComponent<DetailsCardProps> = ({
-  collectionInfo,
-  loadingPage,
-}) => {
+const DetailsCard = ({ collection, loadingPage }: DetailsCardProps ) => {
+
   const getNetworkName = (chainId: number) => {
     let name = '';
     if (chainId == 5) {
@@ -44,13 +44,13 @@ const DetailsCard: FunctionComponent<DetailsCardProps> = ({
   };
 
   const getTransactionUrl = (transactionHash: string) => {
-    const baseUri = getBlockExplorerURI(collectionInfo.chainId);
+    const baseUri = getBlockExplorerURI(collection.chainId);
     const fullLink = `${baseUri}/tx/${transactionHash}`;
     return fullLink;
   };
 
   const getContractUrl = (contractAddr: string) => {
-    const baseUri = getBlockExplorerURI(collectionInfo.chainId);
+    const baseUri = getBlockExplorerURI(collection.chainId);
     const fullLink = `${baseUri}/address/${contractAddr}`;
     return fullLink;
   };
@@ -63,34 +63,37 @@ const DetailsCard: FunctionComponent<DetailsCardProps> = ({
           <>
             <Box display="flex" sx={{ pt: 2, mb: 4, alignItems: 'center' }}>
               <Typography variant="h5" sx={{ fontWeight: 'bold', flexGrow: 1 }}>
-                {collectionInfo.collectionName +
-                  (collectionInfo.collectionSymbol !== ''
-                    ? ` (${collectionInfo.collectionSymbol})`
+                {collection.name +
+                  (collection.symbol !== ''
+                    ? ` (${collection.symbol})`
                     : '')}
               </Typography>
-              <AdminActions collectionId={collectionInfo._id} />
+              <AdminActions 
+                collectionId={collection._id}
+                contractAddress={collection.contractAddress}
+              />
             </Box>
 
-            <Typography sx={{ mb: 4 }}>{collectionInfo.collectiondescription}</Typography>
+            <Typography sx={{ mb: 4 }}>{collection.description}</Typography>
 
             <CardItem
               label="Contract Address"
-              data={formatAddress(collectionInfo.contractAddress)}
-              link={getContractUrl(collectionInfo.contractAddress)}
+              data={formatAddress(collection.contractAddress)}
+              link={getContractUrl(collection.contractAddress)}
               tooltipText="view on block explorer"
             />
             <CardItem
               label="Transaction:"
-              data={formatTxHash(collectionInfo.transactionHash)}
-              link={getTransactionUrl(collectionInfo.transactionHash)}
+              data={formatTxHash(collection.transactionInfo.transactionHash)}
+              link={getTransactionUrl(collection.transactionInfo.transactionHash)}
               tooltipText="view on block explorer"
             />
-            <CardItem label="Owner" data={collectionInfo.contractOwner} />
-            <CardItem label="Network" data={getNetworkName(collectionInfo.chainId)} />
+            <CardItem label="Owner" data={collection.owner} />
+            <CardItem label="Network" data={getNetworkName(collection.chainId)} />
 
             <CardItem
               label="Deployed on"
-              data={formatDate(collectionInfo.createdOn).toString()}
+              data={formatDate(collection.createdOn).toString()}
             />
           </>
         )}
@@ -99,24 +102,32 @@ const DetailsCard: FunctionComponent<DetailsCardProps> = ({
   );
 };
 
-const propTypes = {
-  collectionInfo: PropTypes.shape({
-    _id: PropTypes.string.isRequired,
-    collectionName: PropTypes.string.isRequired,
-    collectiondescription: PropTypes.string.isRequired,
-    collectionSymbol: PropTypes.string.isRequired,
-    contractAddress: PropTypes.string.isRequired,
-    contractOwner: PropTypes.string.isRequired,
-    chainId: PropTypes.number.isRequired,
-    collectionStatus: PropTypes.string.isRequired,
-    blockIssuers: PropTypes.bool.isRequired,
-    transactionHash: PropTypes.string.isRequired,
-    createdOn: PropTypes.instanceOf(Date).isRequired,
-  }).isRequired,
-  loadingPage: PropTypes.bool,
-};
 
-type DetailsCardProps = PropTypes.InferProps<typeof propTypes>;
+
+type DetailsCardProps = {
+  loadingPage: boolean;
+  collection: types.CollectionsRow
+}
+
+
+// const propTypes = {
+//   collectionInfo: PropTypes.shape({
+//     _id: PropTypes.string.isRequired,
+//     collectionName: PropTypes.string.isRequired,
+//     collectiondescription: PropTypes.string.isRequired,
+//     collectionSymbol: PropTypes.string.isRequired,
+//     contractAddress: PropTypes.string.isRequired,
+//     contractOwner: PropTypes.string.isRequired,
+//     chainId: PropTypes.number.isRequired,
+//     collectionStatus: PropTypes.string.isRequired,
+//     blockIssuers: PropTypes.bool.isRequired,
+//     transactionHash: PropTypes.string.isRequired,
+//     createdOn: PropTypes.instanceOf(Date).isRequired,
+//   }).isRequired,
+//   loadingPage: PropTypes.bool,
+// };
+
+// type DetailsCardProps = PropTypes.InferProps<typeof propTypes>;
 
 DetailsCard.defaultProps = {
   loadingPage: false,
