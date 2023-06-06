@@ -169,17 +169,14 @@ router.get('/findByWallet/:pubKey', (req, res, next) => __awaiter(void 0, void 0
     try {
         let { pubKey } = req.params;
         pubKey = pubKey.toLowerCase();
-        let aggregationPipleine = [
+        const aggregationPipleine = [
             {
                 $match: {
-                    $or: [
-                        { owner: pubKey },
-                        { issuers: { $in: [pubKey] } }
-                    ],
-                    'status': "active"
-                }
+                    $or: [{ owner: pubKey }, { issuers: { $in: [pubKey] } }],
+                    status: 'active',
+                },
             },
-            ...(0, dbHelper_1.getCollectionPipeline)()
+            ...(0, dbHelper_1.getCollectionPipeline)(),
         ];
         const dbReponse = yield db_1.default
             .collection('collections')
@@ -197,13 +194,13 @@ router.get('/findByWallet/:pubKey', (req, res, next) => __awaiter(void 0, void 0
 router.get('/:collectionId', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { collectionId } = req.params;
-        let aggregationPipleine = [
+        const aggregationPipleine = [
             {
                 $match: {
                     _id: new mongodb_1.ObjectId(collectionId),
-                }
+                },
             },
-            ...(0, dbHelper_1.getCollectionPipeline)()
+            ...(0, dbHelper_1.getCollectionPipeline)(),
         ];
         const dbReponse = yield db_1.default
             .collection('collections')
@@ -260,12 +257,14 @@ router.patch('/issuers', (req, res, next) => __awaiter(void 0, void 0, void 0, f
     try {
         /** Save a new list of issuers for the collection AFTER the
          * corresponding roles have been changed on chain (i.e. blockchain transaction have been confirmed)
-        * **/
+         * **/
         const { collectionId, newIssuers, from, txnHash } = req.body;
         if (!txnHash)
             return res.status(400).send({ error: 'A transaction hash is required' });
         if (!Array.isArray(newIssuers))
-            return res.status(400).send({ error: 'Invalid format, expect `newIssuers` to be an array' });
+            return res
+                .status(400)
+                .send({ error: 'Invalid format, expect `newIssuers` to be an array' });
         const collectionUniqueId = new mongodb_1.ObjectId(collectionId);
         const findCollection = yield db_1.default.collection('collections').findOne({ _id: collectionUniqueId }, {
             projection: {
@@ -286,7 +285,7 @@ router.patch('/issuers', (req, res, next) => __awaiter(void 0, void 0, void 0, f
         const txnResponse = yield db_1.default.collection('transactions').insertOne(txnObject);
         const newList = (0, dappUtils_2.validateAdressArray)(newIssuers);
         const queryResponse = yield db_1.default.collection('collections').findOneAndUpdate({
-            _id: collectionUniqueId
+            _id: collectionUniqueId,
         }, {
             $set: {
                 issuers: newList,
@@ -304,7 +303,7 @@ router.patch('/issuers', (req, res, next) => __awaiter(void 0, void 0, void 0, f
         const updatedDocument = queryResponse.value;
         return res.json({
             collectionId: updatedDocument === null || updatedDocument === void 0 ? void 0 : updatedDocument._id,
-            issuers: updatedDocument === null || updatedDocument === void 0 ? void 0 : updatedDocument.issuers
+            issuers: updatedDocument === null || updatedDocument === void 0 ? void 0 : updatedDocument.issuers,
         });
     }
     catch (err) {

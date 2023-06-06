@@ -27,5 +27,5 @@ exports.default = {
     }),
     collection: (collectionName) => db.collection(collectionName),
     get: () => db,
-    close: () => client.close()
+    close: () => client.close(),
 };

@@ -47,6 +47,7 @@ const CollectionDetail = () => {
                 <TokensGallery
                   contractAddress={collectionInfo.contractAddress}
                   collectionId={collectionInfo._id}
+                  collectionOwner={collectionInfo.owner}
                 />
               )}
             </Grid>

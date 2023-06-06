@@ -99,7 +99,7 @@ const stringToAdressArray = (data) => {
 };
 exports.stringToAdressArray = stringToAdressArray;
 const validateAdressArray = (addressArray) => {
-    const filteredArray = addressArray.filter(item => item !== '' && ethers_1.ethers.isAddress(item));
+    const filteredArray = addressArray.filter((item) => item !== '' && ethers_1.ethers.isAddress(item));
     return filteredArray;
 };
 exports.validateAdressArray = validateAdressArray;

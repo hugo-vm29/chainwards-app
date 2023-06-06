@@ -1,9 +1,13 @@
 /* eslint-disable no-nested-ternary */
-import { FunctionComponent, useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
+import { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
+import Divider from '@mui/material/Divider';
 import Loader from '../../shared/Loader';
 import Modal from '../../shared/Modal';
 import TransactionWarning from '../../shared/TransactionWarning';
@@ -14,14 +18,15 @@ import { useMetamaskContext } from '../../../contexts/MetamaskProvider';
 import RewardsContract from '../../../contracts/Rewards.json';
 import * as types from '../../../utils/types';
 
-const ViewClaimersModal: FunctionComponent<ViewClaimersModalProps> = ({
+const ViewClaimersModal = ({
   tokenInfo,
   contractAddress,
   collectionId,
   submitCallback,
   openModal,
   onClose,
-}) => {
+  canModify,
+}: ViewClaimersModalProps) => {
   const { getRpcSigner } = useMetamaskContext();
   const [claimersList, setClaimersList] = useState<string[]>([]);
   const [submittingData, setSubmittingData] = useState(false);
@@ -35,7 +40,7 @@ const ViewClaimersModal: FunctionComponent<ViewClaimersModalProps> = ({
   };
 
   const resetModal = () => {
-    setClaimersList(tokenInfo.currentList);
+    setClaimersList(tokenInfo.whitelist);
     onClose();
   };
 
@@ -88,8 +93,8 @@ const ViewClaimersModal: FunctionComponent<ViewClaimersModalProps> = ({
   };
 
   useEffect(() => {
-    setClaimersList(tokenInfo.currentList);
-  }, [tokenInfo.currentList]);
+    setClaimersList(tokenInfo.whitelist);
+  }, [tokenInfo.whitelist]);
 
   return (
     <Modal
@@ -124,42 +129,64 @@ const ViewClaimersModal: FunctionComponent<ViewClaimersModalProps> = ({
       ]}
     >
       <Box>
-        <Loader loading={submittingData} />
-
-        <Typography>
-          View and modify the ethereum accounts (EOA) that are allowed to claim this
-          token.
-        </Typography>
-
-        <TransactionWarning />
-
-        <InteractiveList
-          handleAddItem={addAddress}
-          handleRemoveItem={removeddress}
-          itemsList={claimersList}
-          itemsIcon={<AccountBalanceWalletIcon />}
-        />
+        {canModify ? (
+          <>
+            <Loader loading={submittingData} />
+            <Typography>
+              View and modify the ethereum accounts (EOA) that are allowed to claim this
+              token.
+            </Typography>
+            <TransactionWarning />
+            <InteractiveList
+              handleAddItem={addAddress}
+              handleRemoveItem={removeddress}
+              itemsList={claimersList}
+              itemsIcon={<AccountBalanceWalletIcon />}
+            />
+          </>
+        ) : (
+          <>
+            <List>
+              {tokenInfo.whitelist.map((item, index) => (
+                <div key={index}>
+                  <ListItem sx={{ my: 1 }}>
+                    <ListItemIcon>
+                      <AccountBalanceWalletIcon />
+                    </ListItemIcon>
+                    <ListItemText primary={item} />
+                  </ListItem>
+                  <Divider variant="inset" component="li" />
+                </div>
+              ))}
+            </List>
+            {tokenInfo.whitelist.length == 0 && (
+              <Typography variant="h6" sx={{ fontStyle: 'italic', fontWeight: 'normal' }}>
+                This token have no whitelist.
+              </Typography>
+            )}
+          </>
+        )}
       </Box>
     </Modal>
   );
 };
 
-const propTypes = {
-  openModal: PropTypes.bool.isRequired,
-  onClose: PropTypes.func.isRequired,
-  tokenInfo: PropTypes.shape({
-    currentList: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
-    tokenIssuer: PropTypes.string.isRequired,
-    tokenId: PropTypes.number.isRequired,
-  }).isRequired,
-  collectionId: PropTypes.string.isRequired,
-  contractAddress: PropTypes.string.isRequired,
-  submitCallback: PropTypes.func.isRequired,
+type ViewClaimersModalProps = {
+  openModal: boolean;
+  onClose: () => void;
+  tokenInfo: {
+    whitelist: string[];
+    tokenIssuer: string;
+    tokenId: number;
+  };
+  collectionId: string;
+  contractAddress: string;
+  submitCallback: (tokenId: number, newList: string[]) => void;
+  canModify: boolean;
 };
 
-type ViewClaimersModalProps = PropTypes.InferProps<typeof propTypes>;
-ViewClaimersModal.propTypes = propTypes;
-
-ViewClaimersModal.defaultProps = {};
+ViewClaimersModal.defaultProps = {
+  readOnly: false,
+};
 
 export default ViewClaimersModal;

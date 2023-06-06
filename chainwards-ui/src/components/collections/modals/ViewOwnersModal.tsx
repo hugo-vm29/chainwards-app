@@ -28,8 +28,8 @@ const ViewOwnersModal: FunctionComponent<ViewOwnersModalProps> = ({
     >
       <Box>
         <List>
-          {ownersList?.map((item) => (
-            <>
+          {ownersList?.map((item, index) => (
+            <div key={index}>
               <ListItem sx={{ my: 1 }}>
                 <ListItemIcon>
                   <AccountBalanceWalletIcon />
@@ -37,7 +37,7 @@ const ViewOwnersModal: FunctionComponent<ViewOwnersModalProps> = ({
                 <ListItemText primary={item} />
               </ListItem>
               <Divider variant="inset" component="li" />
-            </>
+            </div>
           ))}
         </List>
         {ownersList?.length == 0 && (

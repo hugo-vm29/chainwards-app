@@ -18,8 +18,8 @@ const getCollectionPipeline = () => {
         },
         {
             $addFields: {
-                'chainId': '$transactionInfo.chainId',
-            }
+                chainId: '$transactionInfo.chainId',
+            },
         },
         {
             $project: {
@@ -30,7 +30,7 @@ const getCollectionPipeline = () => {
                 'transactionInfo.to': 0,
                 'transactionInfo.transactionType': 0,
                 'transactionInfo.contractAddress': 0,
-                'transactionInfo.timestamp': 0
+                'transactionInfo.timestamp': 0,
             },
         },
         { $sort: { createdOn: -1 } },

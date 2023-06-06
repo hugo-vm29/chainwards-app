@@ -1,10 +1,8 @@
 import { useState, useCallback, useEffect } from 'react';
 import axios from 'axios';
-import PropTypes from 'prop-types';
 import { Contract, ethers } from 'ethers';
 import RewardsContract from '../../contracts/Rewards.json';
 import Box from '@mui/material/Box';
-import { FunctionComponent } from 'react';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import Alert from '@mui/material/Alert';
@@ -56,11 +54,12 @@ const styles = {
   },
 };
 
-const TokensGallery: FunctionComponent<TokensGalleryProps> = ({
+const TokensGallery = ({
   contractAddress,
   collectionId,
-}) => {
-  const { getRpcSigner } = useMetamaskContext();
+  collectionOwner,
+}: TokensGalleryProps) => {
+  const { userWallet, getRpcSigner } = useMetamaskContext();
 
   const [openNewTokenModal, setOpenNewTokenModal] = useState(false);
   const [loadingListedTokens, setLoadingListedTokens] = useState(true);
@@ -417,13 +416,18 @@ const TokensGallery: FunctionComponent<TokensGalleryProps> = ({
           setViewClaimersModal(false);
         }}
         tokenInfo={{
-          currentList: selectedToken ? selectedToken.whitelist : [],
+          whitelist: selectedToken ? selectedToken.whitelist : [],
           tokenIssuer: selectedToken ? selectedToken.issuer : '',
           tokenId: selectedToken ? selectedToken.tokenId : 0,
         }}
         contractAddress={contractAddress}
         collectionId={collectionId}
         submitCallback={onChangeClaimers}
+        canModify={
+          selectedToken
+            ? selectedToken.issuer === collectionOwner || userWallet == collectionOwner
+            : true
+        }
       />
 
       <ViewOwnersModal
@@ -437,12 +441,11 @@ const TokensGallery: FunctionComponent<TokensGalleryProps> = ({
   );
 };
 
-const propTypes = {
-  contractAddress: PropTypes.string.isRequired,
-  collectionId: PropTypes.string.isRequired,
+type TokensGalleryProps = {
+  contractAddress: string;
+  collectionId: string;
+  collectionOwner: string;
 };
-
-type TokensGalleryProps = PropTypes.InferProps<typeof propTypes>;
 
 TokensGallery.defaultProps = {};
 

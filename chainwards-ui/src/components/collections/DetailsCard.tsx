@@ -107,25 +107,6 @@ type DetailsCardProps = {
   collection: types.CollectionsRow;
 };
 
-// const propTypes = {
-//   collectionInfo: PropTypes.shape({
-//     _id: PropTypes.string.isRequired,
-//     collectionName: PropTypes.string.isRequired,
-//     collectiondescription: PropTypes.string.isRequired,
-//     collectionSymbol: PropTypes.string.isRequired,
-//     contractAddress: PropTypes.string.isRequired,
-//     contractOwner: PropTypes.string.isRequired,
-//     chainId: PropTypes.number.isRequired,
-//     collectionStatus: PropTypes.string.isRequired,
-//     blockIssuers: PropTypes.bool.isRequired,
-//     transactionHash: PropTypes.string.isRequired,
-//     createdOn: PropTypes.instanceOf(Date).isRequired,
-//   }).isRequired,
-//   loadingPage: PropTypes.bool,
-// };
-
-// type DetailsCardProps = PropTypes.InferProps<typeof propTypes>;
-
 DetailsCard.defaultProps = {
   loadingPage: false,
 };
