@@ -11,9 +11,7 @@ import * as types from '../utils/types';
 
 const CollectionDetail = () => {
   const { collectionId } = useParams();
-  const [collectionInfo, setCollectionInfo] = useState<types.CollectionsRow | null>(
-    null,
-  );
+  const [collectionInfo, setCollectionInfo] = useState<types.CollectionsRow | null>(null);
 
   const [loadingInfo, setLoadingInfo] = useState(true);
 
@@ -42,10 +40,7 @@ const CollectionDetail = () => {
         <>
           <Grid container wrap="nowrap" sx={{ height: '100%', overflow: 'auto' }}>
             <Grid item md={4} xs={12}>
-              <DetailsCard 
-                collection={collectionInfo} 
-                loadingPage={loadingInfo} 
-              />
+              <DetailsCard collection={collectionInfo} loadingPage={loadingInfo} />
             </Grid>
             <Grid item md={8} xs={12}>
               {collectionInfo.status === 'active' && (

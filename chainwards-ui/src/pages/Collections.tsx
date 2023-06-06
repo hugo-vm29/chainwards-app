@@ -5,7 +5,6 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import CollectionsTable from '../components/collections/CollectionsTable';
 import NewCollectionModal from '../components/collections/modals/NewCollectionModal';
-import { useMetamaskContext } from '../contexts/MetamaskProvider';
 import RewardsContract from '../contracts/Rewards.json';
 import * as types from '../utils/types';
 import {
@@ -15,9 +14,13 @@ import {
 } from '../utils/fetch';
 import { getNetworkName } from '../utils/helpers';
 import { BASE_METADATA_URI } from '../utils/constants';
+import { useMetamaskContext } from '../contexts/MetamaskProvider';
+import { useRegisteredAccount } from '../utils/hooks';
 
 const Collections = () => {
-  const { walletAddress, chainId, getRpcSigner } = useMetamaskContext();
+  const loggedIn = useRegisteredAccount();
+
+  const { userWallet, chainId, getRpcSigner } = useMetamaskContext();
 
   const [collectionsList, setCollectionsList] = useState<types.CollectionsRow[]>([]);
   const [loadingTable, setLoadingTable] = useState(true);
@@ -29,7 +32,7 @@ const Collections = () => {
   const getCollections = useCallback(async (address: string) => {
     if (address !== '') {
       setLoadingTable(true);
-      const response = await getCollectionsForAccount(address, chainId);
+      const response = await getCollectionsForAccount(address);
 
       if (response.status == 200) {
         setCollectionsList(response.data);
@@ -39,13 +42,15 @@ const Collections = () => {
     return false;
   }, []);
 
+  const reviewNetwork = useCallback(async (chainId: number) => {
+    const networkName = getNetworkName(chainId);
+    setNetworkName(networkName);
+  }, []);
+
   useEffect(() => {
-    if (chainId !== 0) {
-      const networkName = getNetworkName(chainId);
-      setNetworkName(networkName);
-      getCollections(walletAddress);
-    }
-  }, [chainId, walletAddress]);
+    reviewNetwork(chainId);
+    getCollections(userWallet);
+  }, [userWallet, chainId]);
 
   const onClickNewCollection = () => {
     setOpenModalNew(true);
@@ -60,6 +65,8 @@ const Collections = () => {
       setSubmittingNew(true);
       const signer: any = await getRpcSigner();
 
+      if (!signer) throw new Error('Unable to get signer account');
+
       const factory = new ethers.ContractFactory(
         RewardsContract.abi,
         RewardsContract.bytecode,
@@ -71,7 +78,7 @@ const Collections = () => {
         formValues.symbol,
         BASE_METADATA_URI,
       );
-      //const ctAddress = await contractInstance.getAddress();
+
       const deployTransaction = contractInstance.deploymentTransaction();
 
       const body: types.NewCollectionReqBody = {
@@ -103,7 +110,6 @@ const Collections = () => {
 
       if (response.status == 200) {
         if (response.data.transactionStatus == 'completed') {
-
           const newData: types.CollectionsRow[] = [...collectionsList];
           const findRow: types.CollectionsRow | undefined = newData.find(
             (x) => x.transactionInfo._id == transactionId,
@@ -113,9 +119,7 @@ const Collections = () => {
             findRow.transactionInfo.status = response.data.transactionStatus;
             setCollectionsList(newData);
           }
-
         }
-        
       }
     } catch (err: any) {
       console.log('An error has ocurred, please refresh page', err?.message || '');
@@ -126,44 +130,48 @@ const Collections = () => {
 
   return (
     <Box component="div" sx={{ py: 2, px: 4 }}>
-      <Typography variant="h4"> My Collections</Typography>
-      <Typography sx={{ my: 2 }}>
-        From this page you can create a new NFT collection for your reward program which
-        will be represented by a smart contract. You can also view a list of all the
-        collections associated to your active account.
-      </Typography>
+      {loggedIn && (
+        <>
+          <Typography variant="h4"> My Collections</Typography>
+          <Typography sx={{ my: 2 }}>
+            From this page you can create a new NFT collection for your reward program
+            which will be represented by a smart contract. You can also view a list of all
+            the collections associated to your active account.
+          </Typography>
 
-      <Box sx={{ width: '30em', my: 5, p: 3, border: '1px solid #ddd' }}>
-        <Typography>
-          <strong>My wallet: </strong>
-          {walletAddress}
-        </Typography>
-      </Box>
+          <Box sx={{ width: '30em', my: 5, p: 3, border: '1px solid #ddd' }}>
+            <Typography>
+              <strong>My wallet: </strong>
+              {userWallet}
+            </Typography>
+          </Box>
 
-      <Box sx={{ mt: 8, mb: 10 }}>
-        <Button
-          variant="contained"
-          disabled={submittingNew}
-          sx={{ mt: 2, mb: 4 }}
-          onClick={onClickNewCollection}
-        >
-          New Collection
-        </Button>
+          <Box sx={{ mt: 8, mb: 10 }}>
+            <Button
+              variant="contained"
+              disabled={submittingNew}
+              sx={{ mt: 2, mb: 4 }}
+              onClick={onClickNewCollection}
+            >
+              New Collection
+            </Button>
 
-        <CollectionsTable
-          loading={loadingTable}
-          data={collectionsList}
-          handlePending={checkPendingDeployment}
-        />
+            <CollectionsTable
+              loading={loadingTable}
+              data={collectionsList}
+              handlePending={checkPendingDeployment}
+            />
 
-        <NewCollectionModal
-          openModal={openModalNew}
-          onClose={onClickCancelNew}
-          onSubmitData={onSubmitNewCollection}
-          submittingData={submittingNew}
-          networkName={networkName}
-        />
-      </Box>
+            <NewCollectionModal
+              openModal={openModalNew}
+              onClose={onClickCancelNew}
+              onSubmitData={onSubmitNewCollection}
+              submittingData={submittingNew}
+              networkName={networkName}
+            />
+          </Box>
+        </>
+      )}
     </Box>
   );
 };

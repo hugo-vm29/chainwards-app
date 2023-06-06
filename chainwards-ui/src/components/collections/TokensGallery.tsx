@@ -115,6 +115,9 @@ const TokensGallery: FunctionComponent<TokensGalleryProps> = ({
       setLoadingListedTokens(true);
 
       const signer: any = await getRpcSigner();
+
+      if (!signer) throw new Error('Unable to get signer account');
+
       const contractInstance = new ethers.Contract(
         ctAddress,
         RewardsContract.abi,
@@ -172,7 +175,7 @@ const TokensGallery: FunctionComponent<TokensGalleryProps> = ({
           ...findToken,
           whitelist: filterWhitelist,
         };
-        console.log('updatedToken --> ', updatedToken);
+        //console.log('updatedToken --> ', updatedToken);
         findToken.whitelist = newWhitelist;
         setListedTokens((prev) => [
           ...prev.filter((i) => i.tokenId !== tokenId),

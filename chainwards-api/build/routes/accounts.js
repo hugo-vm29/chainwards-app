@@ -19,15 +19,15 @@ const dappUtils_1 = require("../utils/dappUtils");
 const router = express_1.default.Router({ mergeParams: true });
 router.post('/', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { username } = req.body;
-        // return res.json({
-        //   id: "'646441aacb06612ac957d02f",
-        //   address: '0xb8790386c88565e681b708bc227B76Cd0733c603',
-        //   signingKey: {
-        //     privateKey: '0xea90d99fae1db2935aca86a2b0f7b9efaa76b4c278f5ce2fd56dc8edcc35e178',
-        //     publicKey: '0x0250a25665c4489ae3fe464d3d08f3c69625e12560ea0b86aae521603e44621101',
-        //   },
-        // });
+        const { publicAddr, username } = req.body;
+        const findAccount = yield db_1.default.collection('accounts').findOne({ 'wallet.address': publicAddr }, {
+            projection: {
+                _id: 1,
+                'wallet.address': 1,
+            },
+        });
+        if (findAccount)
+            return res.status(400).send({ error: 'Duplicated account' });
         const wallet = (0, dappUtils_1.createWallet)();
         const newUser = {
             displayName: username,
@@ -37,7 +37,7 @@ router.post('/', (req, res, next) => __awaiter(void 0, void 0, void 0, function*
         };
         const dbResponse = yield db_1.default.collection('accounts').insertOne(newUser);
         console.log('newUser', newUser);
-        return res.json(Object.assign({ id: dbResponse.insertedId }, wallet));
+        return res.json(Object.assign({ id: dbResponse.insertedId, displayName: username }, wallet));
     }
     catch (err) {
         console.error(`Error: ${err}`);
@@ -47,10 +47,10 @@ router.post('/', (req, res, next) => __awaiter(void 0, void 0, void 0, function*
 router.get('/findByWallet/:walletAddr', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { walletAddr } = req.params;
-        const accountsData = yield db_1.default.collection('accounts').findOne({ 'wallet.address': walletAddr }, {
+        const accountsData = yield db_1.default.collection('accounts').findOne({ 'wallet.address': walletAddr.toLowerCase() }, {
             projection: {
                 _id: 1,
-                name: 1,
+                displayName: 1,
                 'wallet.address': 1,
             },
         });

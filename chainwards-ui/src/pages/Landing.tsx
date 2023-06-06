@@ -11,64 +11,96 @@ import Link from '@mui/material/Link';
 import TokenIcon from '@mui/icons-material/Token';
 import CircularProgress from '@mui/material/CircularProgress';
 import { useMetamaskContext } from '../contexts/MetamaskProvider';
-import { findAccountByWallet } from '../utils/fetch';
+import { findAccountByWallet, createNewAccount } from '../utils/fetch';
+import { setApplicationSession } from '../utils/helpers';
 import NewAccountModal from '../components/accounts/NewAccountModal';
+import metamaskLogo from '/metamask.svg';
+import * as types from '../utils/types';
 
 /* eslint-disable jsx-a11y/anchor-is-valid */
 
 const Landing = () => {
   const navigate = useNavigate();
 
-  const {
-    walletAddress,
-    metamaskInstalled,
-    updateStorageInfo,
-    connectToMetamask,
-    resetWalletInfo,
-  } = useMetamaskContext();
+  const { isMetamaskInstalled, userWallet, connectMetaMask } = useMetamaskContext();
 
-  const [checkingAdmin, setCheckingAdmin] = useState(false);
-  const [openModalRegistration, setOpenModalRegistration] = useState(false);
+  const [showMetamaskError, setShowMetamaskError] = useState(false);
+  const [checkingAccount, setCheckingAccount] = useState(false);
+
+  //new account workflow
+  const [openNewAccountModal, setOpenNewAccountModal] = useState(false);
+  const [creatingAccount, setCreatingAccount] = useState(false);
+  const [newAccountDetails, setNewAccountDetails] =
+    useState<types.NewAccountResponse | null>(null);
 
   const handleAdminLogin = async () => {
-    if (metamaskInstalled) {
-      if (walletAddress !== '') {
-        await reviewIfAccountExist(walletAddress);
+    if (isMetamaskInstalled) {
+      if (userWallet !== '') {
+        await reviewIfAccountExist(userWallet);
       } else {
-        const connectedAddress: string = await connectToMetamask();
-        if (connectedAddress !== '') {
-          await reviewIfAccountExist(connectedAddress);
-        }
+        await connectMetaMask();
       }
     } else {
-      setOpenModalRegistration(true);
+      setShowMetamaskError(true);
     }
   };
 
   const reviewIfAccountExist = async (address: string) => {
     try {
-      setCheckingAdmin(true);
+      setCheckingAccount(true);
       const apiResponse = await findAccountByWallet(address);
       if (apiResponse.status == 200) {
-        updateStorageInfo(true);
-        navigate('/collections');
-      } else {
-        throw new Error('api error');
+        setApplicationSession(apiResponse.data);
+        //navigate('/collections', {replace: true});
+        window.location.href = '/collections';
       }
-    } catch (err) {
-      setOpenModalRegistration(true);
+    } catch (err: any) {
+      if (
+        err?.response.status == 404 &&
+        err?.response?.data?.error == 'No account found'
+      ) {
+        setOpenNewAccountModal(true);
+      } else {
+        console.log('Unexpected error. Please refresh.', err?.message || '');
+      }
+    }
+  };
+
+  /** NEW ACCOUNT MODAL **/
+
+  const handleSubmitNewAccount = async (username: string) => {
+    try {
+      setCreatingAccount(true);
+
+      const body = {
+        publicAddr: userWallet,
+        username: username,
+      };
+
+      const apiResponse = await createNewAccount(body);
+
+      if (apiResponse.status === 200) {
+        setNewAccountDetails(apiResponse.data);
+        setCreatingAccount(false);
+      }
+    } catch (err: any) {
+      console.log('Unexpected error. Please refresh.', err?.message || '');
+      onCancelNewAccount();
     }
   };
 
   const onCancelNewAccount = () => {
-    setCheckingAdmin(false);
-    setOpenModalRegistration(false);
+    setOpenNewAccountModal(false);
+    setNewAccountDetails(null);
+    setCheckingAccount(false);
+    setCreatingAccount(false);
   };
 
   const callbackNewAccount = () => {
-    setCheckingAdmin(false);
-    setOpenModalRegistration(false);
-    resetWalletInfo();
+    setOpenNewAccountModal(false);
+    setNewAccountDetails(null);
+    setCheckingAccount(false);
+    setCreatingAccount(false);
     window.location.reload();
   };
 
@@ -76,8 +108,7 @@ const Landing = () => {
     <Grid container>
       <Grid item xs={5} sx={{ pt: '10em', px: 5 }}>
         <Typography variant="h2" noWrap sx={{ mb: 2, fontWeight: 600 }}>
-          {' '}
-          ChainWards{' '}
+          ChainWards
         </Typography>
         <Typography variant="h6" sx={{ fontWeight: 400, mb: 4 }}>
           Create and manage NTFs collections quick and easy !
@@ -101,19 +132,21 @@ const Landing = () => {
                 <Typography variant="h5" sx={{ fontWeight: 700, mb: 2 }}>
                   Almost there !
                 </Typography>
-                <Typography variant="body2">
+                <Typography variant="body1">
                   No account is needed to claim a token. An account is required to create
                   collections only.
                 </Typography>
+                <Typography variant="body2">{`TESTING: ${userWallet}`}</Typography>
               </Box>
+
               <Box
                 display="flex"
                 justifyContent="center"
                 alignItems="center"
                 flexDirection="column"
-                sx={{ mt: 8 }}
+                sx={{ mt: 5, display: showMetamaskError ? 'none' : 'flex' }}
               >
-                {!checkingAdmin ? (
+                {!checkingAccount ? (
                   <>
                     <Button
                       variant="contained"
@@ -125,8 +158,14 @@ const Landing = () => {
                     >
                       Claim my NFT
                     </Button>
-                    <Link component="button" sx={{ mt: 1.5 }} onClick={handleAdminLogin}>
-                      Continue as admin
+                    <Link
+                      component="button"
+                      sx={{ mt: 1.5 }}
+                      onClick={() => {
+                        handleAdminLogin();
+                      }}
+                    >
+                      Create my collections
                     </Link>
                   </>
                 ) : (
@@ -135,15 +174,49 @@ const Landing = () => {
                   </Box>
                 )}
               </Box>
+
+              {showMetamaskError && (
+                <Box
+                  display="flex"
+                  flexDirection="column"
+                  alignItems="center"
+                  sx={{ mt: 5 }}
+                >
+                  <img src={metamaskLogo} alt="metamask-logo" style={{ height: '6em' }} />
+                  <Typography sx={{ mb: 2 }}>
+                    <Link
+                      sx={{ color: '#818181', textDecorationColor: 'inherit' }}
+                      href="https://metamask.io/"
+                      target="_blank"
+                    >
+                      {' '}
+                      Metamask{' '}
+                    </Link>
+                    is required to use this feature. Please install it and then try again.
+                  </Typography>
+                  <Link
+                    component="button"
+                    sx={{ mt: 1 }}
+                    onClick={() => {
+                      setShowMetamaskError(false);
+                    }}
+                  >
+                    Go back
+                  </Link>
+                </Box>
+              )}
             </CardContent>
           </Card>
         </Container>
       </Grid>
+
       <NewAccountModal
-        openModal={openModalRegistration}
+        openModal={openNewAccountModal}
+        newAccountDetails={newAccountDetails}
+        submittingData={creatingAccount}
         onClose={onCancelNewAccount}
-        onConfirmAccount={callbackNewAccount}
-        isMetamaskInstalled={metamaskInstalled}
+        onSubmitData={handleSubmitNewAccount}
+        onConfirm={callbackNewAccount}
       />
     </Grid>
   );

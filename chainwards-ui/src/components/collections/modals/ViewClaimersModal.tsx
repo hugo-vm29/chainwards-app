@@ -41,7 +41,6 @@ const ViewClaimersModal: FunctionComponent<ViewClaimersModalProps> = ({
 
   const submitChangeClaimers = async () => {
     try {
-      
       setSubmittingData(true);
       let tokenClaimers = claimersList.toString();
       tokenClaimers +=
@@ -52,7 +51,8 @@ const ViewClaimersModal: FunctionComponent<ViewClaimersModalProps> = ({
       /** send blockchan transaction to update the merkle root for token in the contract **/
       if (apiReq.status === 200) {
         const signer: any = await getRpcSigner();
-        const newMerkleRoot = apiReq.data.merkleRoot;
+
+        if (!signer) throw new Error('Unable to get signer account');
 
         const contractInstance = new ethers.Contract(
           contractAddress,
@@ -60,6 +60,7 @@ const ViewClaimersModal: FunctionComponent<ViewClaimersModalProps> = ({
           signer,
         );
 
+        const newMerkleRoot = apiReq.data.merkleRoot;
         const onChainTxn = await contractInstance.setMerkleRoot(
           tokenInfo.tokenId,
           newMerkleRoot,
@@ -78,7 +79,6 @@ const ViewClaimersModal: FunctionComponent<ViewClaimersModalProps> = ({
         setSubmittingData(false);
         onClose();
         submitCallback(tokenInfo.tokenId, patchRequest.data.whitelist);
-
       }
     } catch (err: any) {
       console.error('Unable to update claimers', err?.message || '');

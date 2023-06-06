@@ -7,7 +7,7 @@ import Toolbar from '@mui/material/Toolbar';
 import viteLogo from '/vite.svg';
 import Button from '@mui/material/Button';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useAdminAccount } from '../../utils/hooks';
+import { useRegisteredAccount } from '../../utils/hooks';
 
 const PUBLIC_NAV_ITEMS = [
   {
@@ -23,7 +23,7 @@ const PUBLIC_NAV_ITEMS = [
 const PageLayout: FunctionComponent<PageLayoutRouteProps> = ({ children }) => {
   const { pathname } = useLocation();
   const navigate = useNavigate();
-  const isAdminLoggedIn = useAdminAccount();
+  const isAdminLoggedIn = useRegisteredAccount(true);
   const [navItems, setNavItems] = useState(PUBLIC_NAV_ITEMS);
 
   const handleClick = (url: string) => {
@@ -33,10 +33,6 @@ const PageLayout: FunctionComponent<PageLayoutRouteProps> = ({ children }) => {
   useEffect(() => {
     if (isAdminLoggedIn) {
       setNavItems([
-        {
-          name: 'Dashboard',
-          url: '/home',
-        },
         {
           name: 'Collections',
           url: '/collections',
@@ -49,22 +45,24 @@ const PageLayout: FunctionComponent<PageLayoutRouteProps> = ({ children }) => {
     <Box component="main" sx={{ minHeight: '100vh' }}>
       <AppBar
         sx={{
-          height: '75px',
-          display: 'flex',
-          flexDirection: 'row',
+          //height: '75px',
+          // display: 'flex',
+          // flexDirection: 'row',
           backgroundColor: '#fff',
+          color: '#000',
           mb: 1,
         }}
         position="static"
         elevation={2}
       >
-        <Toolbar disableGutters>
-          <Box sx={{ m: 2 }}>
+        <Toolbar sx={{ py: 1 }}>
+          <Box sx={{ mr: 5 }}>
             <img src={viteLogo} alt="Vite logo" style={{ height: '3em' }} />
           </Box>
-          {pathname !== '/' && (
-            <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-              {navItems.map((item, index) => (
+
+          <Box sx={{ flexGrow: 1 }}>
+            {pathname !== '/' &&
+              navItems.map((item, index) => (
                 <Button
                   key={index}
                   sx={{ mx: 2, display: 'block' }}
@@ -73,8 +71,7 @@ const PageLayout: FunctionComponent<PageLayoutRouteProps> = ({ children }) => {
                   {item.name}
                 </Button>
               ))}
-            </Box>
-          )}
+          </Box>
         </Toolbar>
       </AppBar>
       <Box component="main">{children}</Box>

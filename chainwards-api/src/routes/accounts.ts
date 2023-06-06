@@ -7,16 +7,19 @@ const router = express.Router({ mergeParams: true });
 
 router.post('/', async (req: Request, res: Response, next) => {
   try {
-    const { username } = req.body;
+    const { publicAddr, username } = req.body;
 
-    // return res.json({
-    //   id: "'646441aacb06612ac957d02f",
-    //   address: '0xb8790386c88565e681b708bc227B76Cd0733c603',
-    //   signingKey: {
-    //     privateKey: '0xea90d99fae1db2935aca86a2b0f7b9efaa76b4c278f5ce2fd56dc8edcc35e178',
-    //     publicKey: '0x0250a25665c4489ae3fe464d3d08f3c69625e12560ea0b86aae521603e44621101',
-    //   },
-    // });
+    const findAccount = await db.collection('accounts').findOne(
+      { 'wallet.address': publicAddr },
+      {
+        projection: {
+          _id: 1,
+          'wallet.address': 1,
+        },
+      },
+    );
+
+    if (findAccount) return res.status(400).send({ error: 'Duplicated account' });
 
     const wallet = createWallet();
 
@@ -32,8 +35,10 @@ router.post('/', async (req: Request, res: Response, next) => {
     const dbResponse = await db.collection('accounts').insertOne(newUser);
 
     console.log('newUser', newUser);
+
     return res.json({
       id: dbResponse.insertedId,
+      displayName: username,
       ...wallet,
     });
   } catch (err) {
@@ -47,11 +52,11 @@ router.get('/findByWallet/:walletAddr', async (req: Request, res: Response, next
     const { walletAddr } = req.params;
 
     const accountsData = await db.collection('accounts').findOne(
-      { 'wallet.address': walletAddr },
+      { 'wallet.address': walletAddr.toLowerCase() },
       {
         projection: {
           _id: 1,
-          name: 1,
+          displayName: 1,
           'wallet.address': 1,
         },
       },

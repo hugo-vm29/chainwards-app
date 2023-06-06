@@ -167,7 +167,8 @@ router.get('/transaction/status/:txnId', (req, res, next) => __awaiter(void 0, v
 }));
 router.get('/findByWallet/:pubKey', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { pubKey } = req.params;
+        let { pubKey } = req.params;
+        pubKey = pubKey.toLowerCase();
         let aggregationPipleine = [
             {
                 $match: {
@@ -263,6 +264,8 @@ router.patch('/issuers', (req, res, next) => __awaiter(void 0, void 0, void 0, f
         const { collectionId, newIssuers, from, txnHash } = req.body;
         if (!txnHash)
             return res.status(400).send({ error: 'A transaction hash is required' });
+        if (!Array.isArray(newIssuers))
+            return res.status(400).send({ error: 'Invalid format, expect `newIssuers` to be an array' });
         const collectionUniqueId = new mongodb_1.ObjectId(collectionId);
         const findCollection = yield db_1.default.collection('collections').findOne({ _id: collectionUniqueId }, {
             projection: {
@@ -277,11 +280,11 @@ router.patch('/issuers', (req, res, next) => __awaiter(void 0, void 0, void 0, f
             to: findCollection.contractAddress,
             transactionHash: txnHash,
             status: 'completed',
-            transactionType: 'GRANT_ROLE',
+            transactionType: 'GRANT_ROLE_BATCH',
             timestamp: new Date(),
         };
         const txnResponse = yield db_1.default.collection('transactions').insertOne(txnObject);
-        const newList = (0, dappUtils_2.stringToAdressArray)(newIssuers);
+        const newList = (0, dappUtils_2.validateAdressArray)(newIssuers);
         const queryResponse = yield db_1.default.collection('collections').findOneAndUpdate({
             _id: collectionUniqueId
         }, {

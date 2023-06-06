@@ -103,8 +103,12 @@ const NewTokenModal: FunctionComponent<NewTokenModalProps> = ({
       setSubmittingData(true);
       //console.log("formValues", formValues);
       const signer: any = await getRpcSigner();
+
+      if (!signer) throw new Error('Unable to get signer account');
+
       let tokenClaimers = formValues.claimers;
       tokenClaimers += tokenClaimers === '' ? signer.address : ',' + signer.address;
+
       const tokenDescription =
         formValues.description !== ''
           ? formValues.description
@@ -119,7 +123,6 @@ const NewTokenModal: FunctionComponent<NewTokenModalProps> = ({
       data.append('claimers', tokenClaimers.toLowerCase());
 
       const apiResponse = await saveTokenMetadata(data);
-      //console.log('api response (metadata) --> ', apiResponse.data);
 
       /** send blockchan transaction to list new token in contract **/
       if (apiResponse.status == 200) {
@@ -150,8 +153,7 @@ const NewTokenModal: FunctionComponent<NewTokenModalProps> = ({
           claimers: tokenClaimers.toLowerCase(),
         };
 
-        const apiRequest = await newListedToken(body);
-        console.log('apiRequest', apiRequest);
+        await newListedToken(body);
 
         setSubmittingData(false);
         cleanModalData();

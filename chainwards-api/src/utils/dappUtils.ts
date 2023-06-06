@@ -91,6 +91,13 @@ export const stringToAdressArray = (data: string) => {
   return whitelist;
 };
 
+export const validateAdressArray = (addressArray: string[]) => {
+  const filteredArray = addressArray.filter(
+    (item) => item !== '' && ethers.isAddress(item),
+  );
+  return filteredArray;
+};
+
 // const getAlchemyConfig = (chainId: number) => {
 
 //   let network = Network.ETH_GOERLI;

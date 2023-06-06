@@ -23,11 +23,7 @@ export const findAccountByWallet = (address: string) => {
   return result;
 };
 
-export const createNewAccount = (username: string) => {
-  const body = {
-    username,
-  };
-
+export const createNewAccount = (body: types.NewAccountReqBody) => {
   const url = `${apiUrl}/accounts`;
   const result = axios.post(url, body);
   return result;
@@ -35,8 +31,8 @@ export const createNewAccount = (username: string) => {
 
 /** Collections (contracts) * */
 
-export const getCollectionsForAccount = (address: string, chainId: number) => {
-  const url = `${apiUrl}/collections/findByWallet/${address}?chainId=${chainId}`;
+export const getCollectionsForAccount = (address: string) => {
+  const url = `${apiUrl}/collections/findByWallet/${address}`;
   const result = axios.get(url);
   return result;
 };

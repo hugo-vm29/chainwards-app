@@ -1,5 +1,3 @@
-import { FunctionComponent } from 'react';
-import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 import MUIDataTable, { MUIDataTableOptions } from 'mui-datatables';
 import Box from '@mui/material/Box';
@@ -64,7 +62,6 @@ const CollectionsTable = ({
   handlePending,
   data,
 }: CollectionsTableProps) => {
-
   const navigate = useNavigate();
 
   const getStatusIcon = (statusFlag: string) => {
@@ -150,9 +147,7 @@ const CollectionsTable = ({
           return (
             <Box display="flex" textAlign="center">
               {getNetworkIcon(value)}
-              <Typography sx={{ marginLeft: 1 }}>
-                {getNetworkName(value)}{' '}
-              </Typography>
+              <Typography sx={{ marginLeft: 1 }}>{getNetworkName(value)} </Typography>
             </Box>
           );
         },
@@ -176,7 +171,6 @@ const CollectionsTable = ({
         filter: false,
         customBodyRender: (value: string, tableMeta: any) => {
           const transactionId = tableMeta.rowData[7];
-          console.log("transactionId",transactionId);
           return (
             <Tooltip
               title={value == 'pending' ? 'click to refresh' : ''}
@@ -248,13 +242,12 @@ const CollectionsTable = ({
   );
 };
 
-
 type CollectionsTableProps = {
-  data: types.CollectionsRow [],
+  data: types.CollectionsRow[];
   emptyMessage?: string;
   loading: boolean;
-  handlePending: ( data:string) => void;
-}
+  handlePending: (data: string) => void;
+};
 
 CollectionsTable.defaultProps = {
   loading: false,

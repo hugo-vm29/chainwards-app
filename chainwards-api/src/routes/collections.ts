@@ -3,7 +3,7 @@ import db from '../db';
 import { setProvider, getRpcEndpoint, getTransactionReceipt } from '../utils/dappUtils';
 import { ObjectId } from 'mongodb';
 import { getCollectionPipeline } from '../utils/dbHelper';
-import {stringToAdressArray } from '../utils/dappUtils';
+import { validateAdressArray } from '../utils/dappUtils';
 
 /* eslint-disable camelcase */
 const router = express.Router({ mergeParams: true });
@@ -194,20 +194,17 @@ router.get('/transaction/status/:txnId', async (req: Request, res: Response, nex
 
 router.get('/findByWallet/:pubKey', async (req: Request, res: Response, next) => {
   try {
-  
-    const { pubKey } = req.params;
-  
-    let aggregationPipleine = [
+    let { pubKey } = req.params;
+    pubKey = pubKey.toLowerCase();
+
+    const aggregationPipleine = [
       {
-        $match: { 
-          $or: [
-            { owner: pubKey },  
-            { issuers: { $in: [pubKey] } }
-          ],
-          'status': "active"
-        }
+        $match: {
+          $or: [{ owner: pubKey }, { issuers: { $in: [pubKey] } }],
+          status: 'active',
+        },
       },
-      ...getCollectionPipeline()
+      ...getCollectionPipeline(),
     ];
 
     const dbReponse = await db
@@ -226,28 +223,26 @@ router.get('/findByWallet/:pubKey', async (req: Request, res: Response, next) =>
 
 router.get('/:collectionId', async (req: Request, res: Response, next) => {
   try {
-
     const { collectionId } = req.params;
 
-    let aggregationPipleine = [
+    const aggregationPipleine = [
       {
-        $match: { 
+        $match: {
           _id: new ObjectId(collectionId),
-        }
+        },
       },
-      ...getCollectionPipeline()
+      ...getCollectionPipeline(),
     ];
 
     const dbReponse = await db
-     .collection('collections')
-     .aggregate(aggregationPipleine)
-     .toArray();
+      .collection('collections')
+      .aggregate(aggregationPipleine)
+      .toArray();
 
     if (dbReponse.length === 0)
       return res.status(404).send({ error: 'Collection not found' });
 
     return res.json(dbReponse[0]);
-
   } catch (err) {
     console.error(`Error: ${err}`);
     return next(err);
@@ -278,11 +273,9 @@ router.get(
 );
 
 router.get('/issuers/:collectionId', async (req: Request, res: Response, next) => {
-
   const routeName = 'get/collections/issuers/:collectionId';
 
-  try{
-    
+  try {
     const { collectionId } = req.params;
 
     const findCollection = await db.collection('collections').findOne(
@@ -296,32 +289,32 @@ router.get('/issuers/:collectionId', async (req: Request, res: Response, next) =
       },
     );
 
-    if(!findCollection)
-    return res.status(404).send({ error: 'Collection not found' });
+    if (!findCollection) return res.status(404).send({ error: 'Collection not found' });
 
     return res.json(findCollection);
-
-  }catch(err: any){
+  } catch (err: any) {
     console.error(`Error (${routeName}): ${err}`);
     return next(err);
   }
-
 });
 
 router.patch('/issuers', async (req: Request, res: Response, next) => {
-
   const routeName = 'patch/collections/issuers';
 
-  try{
-
+  try {
     /** Save a new list of issuers for the collection AFTER the
      * corresponding roles have been changed on chain (i.e. blockchain transaction have been confirmed)
-    * **/
+     * **/
 
     const { collectionId, newIssuers, from, txnHash } = req.body;
 
     if (!txnHash)
       return res.status(400).send({ error: 'A transaction hash is required' });
+
+    if (!Array.isArray(newIssuers))
+      return res
+        .status(400)
+        .send({ error: 'Invalid format, expect `newIssuers` to be an array' });
 
     const collectionUniqueId = new ObjectId(collectionId);
 
@@ -342,16 +335,16 @@ router.patch('/issuers', async (req: Request, res: Response, next) => {
       to: findCollection.contractAddress,
       transactionHash: txnHash,
       status: 'completed',
-      transactionType: 'GRANT_ROLE',
+      transactionType: 'GRANT_ROLE_BATCH',
       timestamp: new Date(),
     };
 
     const txnResponse = await db.collection('transactions').insertOne(txnObject);
-    const newList = stringToAdressArray(newIssuers);
+    const newList = validateAdressArray(newIssuers);
 
     const queryResponse = await db.collection('collections').findOneAndUpdate(
       {
-        _id: collectionUniqueId
+        _id: collectionUniqueId,
       },
       {
         $set: {
@@ -374,15 +367,12 @@ router.patch('/issuers', async (req: Request, res: Response, next) => {
 
     return res.json({
       collectionId: updatedDocument?._id,
-      issuers: updatedDocument?.issuers
+      issuers: updatedDocument?.issuers,
     });
-
-  }catch(err: any){
+  } catch (err: any) {
     console.error(`Error (${routeName}): ${err}`);
     return next(err);
   }
-
 });
-
 
 export default router;

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { FunctionComponent } from 'react';
+import { ethers } from 'ethers';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
@@ -10,7 +11,10 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import ModeEditOutlineOutlinedIcon from '@mui/icons-material/ModeEditOutlineOutlined';
 import SettingsIcon from '@mui/icons-material/Settings';
 import IssuersModal from './modals/IssuersModal';
-import { getIssuersList } from '../../utils/fetch';
+import { getIssuersList, updateCollectionIssuers } from '../../utils/fetch';
+import { useMetamaskContext } from '../../contexts/MetamaskProvider';
+import * as types from '../../utils/types';
+import RewardsContract from '../../contracts/Rewards.json';
 
 const styles = {
   cardRoot: {
@@ -24,18 +28,19 @@ const styles = {
   },
 };
 
-/* eslint-disable @typescript-eslint/no-unused-vars, no-empty, @typescript-eslint/no-empty-function */
+//eslint-disable @typescript-eslint/no-unused-vars, no-empty, @typescript-eslint/no-empty-function
 
-const AdminActions: FunctionComponent<AdminActionsProps> = ({ collectionId, contractAddress}) => {
-  
+const AdminActions: FunctionComponent<AdminActionsProps> = ({
+  collectionId,
+  contractAddress,
+}) => {
+  const { getRpcSigner } = useMetamaskContext();
+
   const [anchorEl, setAnchorEl] = useState<(EventTarget & Element) | null>(null);
   const open = Boolean(anchorEl);
 
   const [openIssuersModal, setOpenIssuersModal] = useState(false);
   const [issuersList, setIssuersList] = useState<string[]>([]);
-
-  //
-  //const [submitIssuersChange, setSubmitIssuersChange] = useState(false);
 
   const handleMenuButton = (event: React.SyntheticEvent) => {
     setAnchorEl(event.currentTarget);
@@ -45,46 +50,62 @@ const AdminActions: FunctionComponent<AdminActionsProps> = ({ collectionId, cont
     setAnchorEl(null);
   };
 
-  const getCurrentIssuersList = async(collectionId: string) => {
-
-    try{
+  /** MANAGE ISSUERS MODAL **/
+  const getCurrentIssuersList = async (collectionId: string) => {
+    try {
       const apiReq = await getIssuersList(collectionId);
-      if(apiReq.status == 200){
-        console.log("apiReq", apiReq.data);
+      if (apiReq.status == 200) {
         setIssuersList(apiReq.data.issuers);
       }
-    }catch(err:any){
-      console.error("Error loading data", err?.message || "");
+    } catch (err: any) {
+      console.error('Error loading data', err?.message || '');
     }
-  }
+  };
 
-  const onUpdateIssuers = async() => {
-    handleCloseMenu();
+  const handleSubmitIssuersChange = async (newList: string[]) => {
+    try {
+      const signer: any = await getRpcSigner();
 
-  }
+      if (!signer) throw new Error('Unable to get signer account');
 
-  // const handleManageIssuers = () => {
-  //   handleCloseMenu();
-  //   setOpenIssuersModal(true);
-  // };
+      const toRemove = issuersList.filter((x) => !newList.includes(x));
 
-  // const onCloseIssuersModal = () => {
-  //   setOpenIssuersModal(false);
-  // };
+      const contractInstance = new ethers.Contract(
+        contractAddress,
+        RewardsContract.abi,
+        signer,
+      );
 
+      /** chain roles in contract **/
+      const onChainTxn = await contractInstance.updateTokenIssuersBatch(
+        newList,
+        toRemove,
+      );
+      await onChainTxn.wait();
+
+      /** save changes in DB **/
+      const reqBody: types.PatchIssuersReqBody = {
+        collectionId: collectionId,
+        newIssuers: newList,
+        from: signer.address,
+        txnHash: onChainTxn.hash,
+      };
+
+      const apiReponse = await updateCollectionIssuers(reqBody);
+
+      if (apiReponse.status == 200) {
+        setIssuersList(apiReponse.data.issuers);
+        setOpenIssuersModal(false);
+      }
+    } catch (err: any) {
+      console.error('Unable to submit changes. Please refresh.', err?.message || '');
+      setOpenIssuersModal(false);
+    }
+  };
 
   useEffect(() => {
     getCurrentIssuersList(collectionId);
   }, []);
-
-  // const onSubmitChangeIssuers = async (newList: string[]) => {
-  //   try {
-
-      
-  //   } catch (err) {
-  //     console.log('ERROR', err);
-  //   }
-  // };
 
   return (
     <>
@@ -107,7 +128,7 @@ const AdminActions: FunctionComponent<AdminActionsProps> = ({ collectionId, cont
           'aria-labelledby': 'edit-client-menu',
         }}
       >
-        <MenuItem 
+        <MenuItem
           onClick={() => {
             setOpenIssuersModal(true);
             handleCloseMenu();
@@ -118,11 +139,7 @@ const AdminActions: FunctionComponent<AdminActionsProps> = ({ collectionId, cont
           </ListItemIcon>
           <ListItemText>Manage NFT issuers</ListItemText>
         </MenuItem>
-        <MenuItem 
-          onClick={() => {
-
-          }}
-        >
+        <MenuItem>
           <ListItemIcon>
             <SettingsIcon sx={styles.icons} />
           </ListItemIcon>
@@ -131,12 +148,11 @@ const AdminActions: FunctionComponent<AdminActionsProps> = ({ collectionId, cont
       </Menu>
       <IssuersModal
         openModal={openIssuersModal}
-        onClose={()=>{
+        onClose={() => {
           setOpenIssuersModal(false);
         }}
-        currentIssuers={['0x0000', '0x01111']}
-        collectionId={collectionId}
-        contractAddress={contractAddress}
+        currentIssuers={issuersList}
+        onSubmitData={handleSubmitIssuersChange}
       />
     </>
   );
@@ -144,7 +160,7 @@ const AdminActions: FunctionComponent<AdminActionsProps> = ({ collectionId, cont
 
 const propTypes = {
   collectionId: PropTypes.string.isRequired,
-  contractAddress: PropTypes.string.isRequired
+  contractAddress: PropTypes.string.isRequired,
 };
 
 type AdminActionsProps = PropTypes.InferProps<typeof propTypes>;

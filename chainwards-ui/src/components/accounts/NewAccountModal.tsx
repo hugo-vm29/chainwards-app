@@ -1,35 +1,28 @@
 /* eslint-disable no-nested-ternary */
-import { FunctionComponent, useState } from 'react';
-import PropTypes from 'prop-types';
+import { useState } from 'react';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Modal from '../shared/Modal';
 import TextField from '@mui/material/TextField';
 import Loader from '../shared/Loader';
-import metamaskLogo from '/metamask.svg';
-import Link from '@mui/material/Link';
-import { createNewAccount } from '../../utils/fetch';
 import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
-import { NewAccountResponse } from '../../utils/types';
+import * as types from '../../utils/types';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 
 type FormValues = {
   input_username: string;
 };
 
-const NewAccountModal: FunctionComponent<NewAccountModalProps> = ({
+const NewAccountModal = ({
   openModal,
+  newAccountDetails,
+  submittingData,
   onClose,
-  onConfirmAccount,
-  isMetamaskInstalled,
-}) => {
+  onSubmitData,
+  onConfirm,
+}: NewAccountModalProps) => {
   const [values, setValues] = useState<FormValues | null>(null);
-
-  const [submittingData, setSubmittingData] = useState(false);
-  const [newAccountDetails, setNewAccountDetails] = useState<NewAccountResponse | null>(
-    null,
-  );
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setValues((prevState: any) => ({
@@ -38,24 +31,9 @@ const NewAccountModal: FunctionComponent<NewAccountModalProps> = ({
     }));
   };
 
-  const onSubmitNewAccount = async () => {
-    if (values) {
-      try {
-        setSubmittingData(true);
-        const apiResponse = await createNewAccount(values.input_username);
-        if (apiResponse.status == 200) {
-          setNewAccountDetails(apiResponse.data);
-          setSubmittingData(false);
-        }
-      } catch (err: any) {
-        console.log('An error occurred. Please refresh', err?.message || '');
-      }
-    }
-  };
-
   return (
     <Modal
-      title={isMetamaskInstalled ? 'New Account' : 'Required dependency'}
+      title={'New Account'}
       open={openModal}
       handleClose={() => onClose()}
       actions={[
@@ -67,8 +45,6 @@ const NewAccountModal: FunctionComponent<NewAccountModalProps> = ({
           size: 'large',
           onClick: () => {
             onClose();
-            setNewAccountDetails(null);
-            setValues(null);
           },
           disabled: submittingData || newAccountDetails !== null,
         },
@@ -80,36 +56,18 @@ const NewAccountModal: FunctionComponent<NewAccountModalProps> = ({
           size: 'large',
           onClick: () => {
             if (newAccountDetails === null) {
-              onSubmitNewAccount();
+              onSubmitData(values?.input_username || '');
             } else {
-              onConfirmAccount();
-              setNewAccountDetails(null);
-              setValues(null);
+              onConfirm();
             }
           },
-          disabled: submittingData || !isMetamaskInstalled,
+          disabled: submittingData,
         },
       ]}
     >
       <Box>
         <Loader loading={submittingData || false} />
-        {!isMetamaskInstalled && (
-          <Box display="flex" flexDirection="column" alignItems="center" sx={{ mb: 2 }}>
-            <img src={metamaskLogo} alt="metamask-logo" style={{ height: '5em' }} />
-            <Typography sx={{ mb: 2 }}>
-              <Link
-                sx={{ color: '#818181', textDecorationColor: 'inherit' }}
-                href="https://metamask.io/"
-                target="_blank"
-              >
-                {' '}
-                Metamask{' '}
-              </Link>
-              is required to use this feature. Please install it and then try again.
-            </Typography>
-          </Box>
-        )}
-        {newAccountDetails === null && isMetamaskInstalled && (
+        {newAccountDetails === null && (
           <>
             <Typography variant="body2" sx={{ mb: 2 }}>
               Choose a username to proceed (or just use your name).
@@ -122,9 +80,8 @@ const NewAccountModal: FunctionComponent<NewAccountModalProps> = ({
             <Box display="flex" sx={{ color: '#D68100', marginBottom: 1 }}>
               <WarningAmberIcon sx={{ fontSize: '1.3rem', marginRight: 0.5 }} />
               <Typography sx={{ fontSize: '0.875rem' }}>
-                If you already had an account please make sure if it is active in metamask
-                and connected to the application. You might need to refresh your page as
-                well.
+                If you already had an account please make sure it is active and connected
+                to the application. You might need to refresh your page as well.
               </Typography>
             </Box>
 
@@ -141,7 +98,7 @@ const NewAccountModal: FunctionComponent<NewAccountModalProps> = ({
           </>
         )}
 
-        {newAccountDetails !== null && isMetamaskInstalled && (
+        {newAccountDetails !== null && (
           <>
             <Alert severity="warning" sx={{ mb: 2 }}>
               <AlertTitle>Attention</AlertTitle>
@@ -159,7 +116,7 @@ const NewAccountModal: FunctionComponent<NewAccountModalProps> = ({
               Private key:
             </Typography>
             <Typography style={{ wordWrap: 'break-word' }}>
-              {newAccountDetails.signingKey.privateKey}{' '}
+              {newAccountDetails.signingKey.privateKey}
             </Typography>
           </>
         )}
@@ -168,18 +125,15 @@ const NewAccountModal: FunctionComponent<NewAccountModalProps> = ({
   );
 };
 
-const propTypes = {
-  openModal: PropTypes.bool.isRequired,
-  onClose: PropTypes.func.isRequired,
-  onConfirmAccount: PropTypes.func.isRequired,
-  isMetamaskInstalled: PropTypes.bool,
+type NewAccountModalProps = {
+  openModal: boolean;
+  submittingData: boolean;
+  newAccountDetails: types.NewAccountResponse | null;
+  onClose: () => void;
+  onSubmitData: (username: string) => void;
+  onConfirm: () => void;
 };
 
-type NewAccountModalProps = PropTypes.InferProps<typeof propTypes>;
-NewAccountModal.propTypes = propTypes;
-
-NewAccountModal.defaultProps = {
-  isMetamaskInstalled: false,
-};
+NewAccountModal.defaultProps = {};
 
 export default NewAccountModal;

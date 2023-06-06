@@ -1,15 +1,18 @@
 import { useEffect, useState } from 'react';
-import { useMetamaskContext } from '../contexts/MetamaskProvider';
+import { checkApplicationSession } from './helpers';
 
-export const useAdminAccount = () => {
-  const { walletAddress, isWalletRegistered } = useMetamaskContext();
-  const [isAdmin, setIsAdmin] = useState(false);
+export const useRegisteredAccount = (disableRedirect = false) => {
+  const [accountVerified, setAccountVerified] = useState(false);
 
   useEffect(() => {
-    if (walletAddress !== '' && isWalletRegistered) {
-      setIsAdmin(true);
-    }
-  }, [setIsAdmin, walletAddress, isWalletRegistered]);
+    const appSession = checkApplicationSession();
 
-  return isAdmin;
+    if (!appSession && !disableRedirect) {
+      window.location.href = '/';
+    }
+
+    setAccountVerified(Boolean(appSession));
+  }, [setAccountVerified, disableRedirect]);
+
+  return accountVerified;
 };

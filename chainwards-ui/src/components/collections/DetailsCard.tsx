@@ -1,6 +1,4 @@
-import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
-import { FunctionComponent } from 'react';
 import Typography from '@mui/material/Typography';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
@@ -14,7 +12,7 @@ import CardItem from './CardItem';
 import AdminActions from './AdminActions';
 import Loader from '../../components/shared/Loader';
 import * as types from '../../utils/types';
-
+import { useMetamaskContext } from '../../contexts/MetamaskProvider';
 
 const styles = {
   cardRoot: {
@@ -31,7 +29,8 @@ const styles = {
   },
 };
 
-const DetailsCard = ({ collection, loadingPage }: DetailsCardProps ) => {
+const DetailsCard = ({ collection, loadingPage }: DetailsCardProps) => {
+  const { userWallet } = useMetamaskContext();
 
   const getNetworkName = (chainId: number) => {
     let name = '';
@@ -64,14 +63,15 @@ const DetailsCard = ({ collection, loadingPage }: DetailsCardProps ) => {
             <Box display="flex" sx={{ pt: 2, mb: 4, alignItems: 'center' }}>
               <Typography variant="h5" sx={{ fontWeight: 'bold', flexGrow: 1 }}>
                 {collection.name +
-                  (collection.symbol !== ''
-                    ? ` (${collection.symbol})`
-                    : '')}
+                  (collection.symbol !== '' ? ` (${collection.symbol})` : '')}
               </Typography>
-              <AdminActions 
-                collectionId={collection._id}
-                contractAddress={collection.contractAddress}
-              />
+
+              {userWallet === collection.owner && (
+                <AdminActions
+                  collectionId={collection._id}
+                  contractAddress={collection.contractAddress}
+                />
+              )}
             </Box>
 
             <Typography sx={{ mb: 4 }}>{collection.description}</Typography>
@@ -102,13 +102,10 @@ const DetailsCard = ({ collection, loadingPage }: DetailsCardProps ) => {
   );
 };
 
-
-
 type DetailsCardProps = {
   loadingPage: boolean;
-  collection: types.CollectionsRow
-}
-
+  collection: types.CollectionsRow;
+};
 
 // const propTypes = {
 //   collectionInfo: PropTypes.shape({

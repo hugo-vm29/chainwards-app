@@ -21,5 +21,5 @@ export default {
 
   collection: (collectionName: string) => db.collection(collectionName),
   get: () => db,
-  close: () => client.close()
+  close: () => client.close(),
 };

@@ -1,7 +1,13 @@
 /** accounts **/
 
+export type NewAccountReqBody = {
+  publicAddr: string;
+  username: string;
+};
+
 export type NewAccountResponse = {
   id: string;
+  displayName: string;
   address: string;
   signingKey: {
     privateKey: string;
@@ -25,14 +31,14 @@ export type CollectionsRow = {
   contractAddress: string;
   owner: string;
   status: string;
-  blockIssuers: boolean,
+  blockIssuers: boolean;
   createdOn: Date;
   chainId: number;
-  transactionInfo : {
+  transactionInfo: {
     _id: string;
     transactionHash: string;
-    status: string
-  }
+    status: string;
+  };
 };
 
 export type NewCollectionReqBody = {
@@ -62,11 +68,10 @@ export type CollectionDetail = {
 
 export type PatchIssuersReqBody = {
   collectionId: string;
-  newIssuers: string;
+  newIssuers: string[];
   from: string;
   txnHash: string;
 };
-
 
 /** tokens **/
 

@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.stringToAdressArray = exports.validateAddress = exports.getMerkleRoot = exports.getTransactionReceipt = exports.getRpcEndpoint = exports.setProvider = exports.createWallet = void 0;
+exports.validateAdressArray = exports.stringToAdressArray = exports.validateAddress = exports.getMerkleRoot = exports.getTransactionReceipt = exports.getRpcEndpoint = exports.setProvider = exports.createWallet = void 0;
 const config_1 = __importDefault(require("config"));
 const ethers_1 = require("ethers");
 const merkletreejs_1 = require("merkletreejs");
@@ -98,6 +98,11 @@ const stringToAdressArray = (data) => {
     return whitelist;
 };
 exports.stringToAdressArray = stringToAdressArray;
+const validateAdressArray = (addressArray) => {
+    const filteredArray = addressArray.filter(item => item !== '' && ethers_1.ethers.isAddress(item));
+    return filteredArray;
+};
+exports.validateAdressArray = validateAdressArray;
 // const getAlchemyConfig = (chainId: number) => {
 //   let network = Network.ETH_GOERLI;
 //   let apiKey =  config.get<string>("goerli_api_key");

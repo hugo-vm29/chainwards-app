@@ -61,3 +61,36 @@ export const getBlockExplorerURI = (chainId: number) => {
   }
   return baseUri;
 };
+
+export const getLocalStorage = (keyName: string) => {
+  const storageItem = localStorage.getItem(keyName);
+  if (storageItem) {
+    const item = JSON.parse(storageItem);
+    return item;
+  }
+  return null;
+};
+
+export const setLocalStorage = (data: any, keyName: string) => {
+  const valueToStore = JSON.stringify(data);
+  localStorage.setItem(keyName, valueToStore);
+};
+
+export const setApplicationSession = (data: any) => {
+  const accountInfo = {
+    id: data._id,
+    displayName: data.displayName,
+    address: data.wallet.address,
+  };
+
+  const valueToStore = JSON.stringify(accountInfo);
+  localStorage.setItem('accountInfo', valueToStore);
+};
+
+export const checkApplicationSession = () => {
+  const cachedData = localStorage.getItem('accountInfo');
+  if (cachedData) {
+    return JSON.parse(cachedData);
+  }
+  return null;
+};
