@@ -1,10 +1,4 @@
-import React, {
-  useState,
-  useContext,
-  useEffect,
-  createContext,
-  useCallback,
-} from 'react';
+import { useState, useContext, useEffect, createContext, useCallback } from 'react';
 import { ethers } from 'ethers';
 import detectEthereumProvider from '@metamask/detect-provider';
 
@@ -46,6 +40,7 @@ const MetamaskProvider = ({ children }: MetamaskProviderProps) => {
       // if(accounts.length > 0){
       //   const newAccount = await provider.getSigner();
       //   setUserWallet(newAccount.address);
+      //   return newAccount.address;
       // }
     } catch (err: any) {
       console.log('ERROR', err);
@@ -65,7 +60,9 @@ const MetamaskProvider = ({ children }: MetamaskProviderProps) => {
   const updateWallet = useCallback(async () => {
     try {
       const accounts = await provider.send('eth_accounts', []);
+      console.log('updateWallet', accounts);
       if (accounts.length > 0) {
+        localStorage.clear();
         const newAccount = await provider.getSigner();
         setUserWallet(newAccount.address);
       }
@@ -83,7 +80,7 @@ const MetamaskProvider = ({ children }: MetamaskProviderProps) => {
     return null;
   };
 
-  const returnToHomePage = () => {
+  const metamaskChangesListener = () => {
     setUserWallet('');
     localStorage.clear();
     window.location.href = '/';
@@ -101,16 +98,16 @@ const MetamaskProvider = ({ children }: MetamaskProviderProps) => {
         setProvider();
         updateWallet();
         reviewActiveChain();
-        window.ethereum.on('accountsChanged', returnToHomePage);
-        window.ethereum.on('chainChanged', returnToHomePage);
+        window.ethereum.on('accountsChanged', metamaskChangesListener);
+        window.ethereum.on('chainChanged', metamaskChangesListener);
       }
     };
 
     reviewMetamask();
 
     return () => {
-      window.ethereum?.removeListener('accountsChanged', returnToHomePage);
-      window.ethereum?.removeListener('chainChanged', returnToHomePage);
+      window.ethereum?.removeListener('accountsChanged', metamaskChangesListener);
+      window.ethereum?.removeListener('chainChanged', metamaskChangesListener);
     };
   }, []);
 

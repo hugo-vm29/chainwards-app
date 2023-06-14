@@ -19,6 +19,7 @@ const multer_1 = __importDefault(require("multer"));
 const nft_storage_1 = require("nft.storage");
 const dappUtils_1 = require("../utils/dappUtils");
 const mongodb_1 = require("mongodb");
+const Rewards_json_1 = __importDefault(require("../contracts/Rewards.json"));
 const memStorage = multer_1.default.memoryStorage();
 const upload = (0, multer_1.default)({ storage: memStorage });
 /* eslint-disable camelcase */
@@ -178,6 +179,185 @@ router.patch('/claimers', (req, res, next) => __awaiter(void 0, void 0, void 0, 
             collectionId: collectionUniqueId,
             whitelist: updatedDocument === null || updatedDocument === void 0 ? void 0 : updatedDocument.whitelist,
         });
+    }
+    catch (err) {
+        console.error(`Error (${routeName}): ${err}`);
+        return next(err);
+    }
+}));
+router.get('/toClaim/:pubKey', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const routeName = 'get/tokens/toClaim/:pubKey';
+    try {
+        let { pubKey } = req.params;
+        pubKey = pubKey.toLowerCase();
+        const mongoPipeline = [
+            {
+                $match: {
+                    whitelist: { $in: [pubKey] },
+                    claimable: true
+                },
+            },
+            {
+                $lookup: {
+                    from: 'collections',
+                    localField: 'collectionId',
+                    foreignField: '_id',
+                    as: 'collectionInfo',
+                },
+            },
+            {
+                $unwind: {
+                    path: '$collectionInfo',
+                },
+            },
+            {
+                $match: {
+                    'collectionInfo.status': 'active'
+                },
+            },
+            {
+                $project: {
+                    _id: 1,
+                    tokenId: 1,
+                    //whitelist: 1,
+                    chainId: 1,
+                    'collectionInfo._id': 1,
+                    'collectionInfo.name': 1,
+                    'collectionInfo.contractAddress': 1
+                },
+            },
+        ];
+        const dbReponse = yield db_1.default
+            .collection('tokens')
+            .aggregate(mongoPipeline)
+            .toArray();
+        const claimedTokens = yield db_1.default
+            .collection('tokenHistory')
+            .find({
+            owner: pubKey
+        }).toArray();
+        const completeData = dbReponse.reduce((result, item) => {
+            const findItem = claimedTokens.find(x => x.tokenId === item.tokenId && x.collectionId.equals(item.collectionInfo._id));
+            if (!findItem) {
+                //console.log("aqui", result);
+                result.push(item);
+            }
+            return result;
+        }, []);
+        // var myArray = ['a', 'b', 'a', 'b', 'c', 'e', 'e', 'c', 'd', 'd', 'd', 'd'];
+        // var myOrderedArray = myArray.reduce(function (accumulator:any , currentValue:any) {
+        //   if (accumulator.indexOf(currentValue) === -1) {
+        //     accumulator.push(currentValue);
+        //   }
+        //   return accumulator
+        // }, []);
+        return res.json(completeData);
+    }
+    catch (err) {
+        console.error(`Error (${routeName}): ${err}`);
+        return next(err);
+    }
+}));
+router.post('/mint', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const routeName = 'post/tokens/mint';
+    let mintTransactionId;
+    try {
+        const { tokenId, collectionId, addressTo } = req.body;
+        /** validations **/
+        const findCollection = yield db_1.default.collection('collections').findOne({
+            _id: new mongodb_1.ObjectId(collectionId)
+        }, {
+            projection: {
+                _id: 1,
+                contractAddress: 1,
+                owner: 1
+            },
+        });
+        if (!findCollection)
+            return res
+                .status(400)
+                .send({ error: 'Collection is not valid' });
+        const findToken = yield db_1.default.collection('tokens').findOne({
+            tokenId: Number(tokenId),
+            collectionId: new mongodb_1.ObjectId(collectionId)
+        }, {
+            projection: {
+                _id: 1,
+                whitelist: 1,
+                chainId: 1
+            },
+        });
+        if (!findToken)
+            return res
+                .status(400)
+                .send({ error: 'Token is not valid' });
+        /** SEND blockchain transaction **/
+        const findOwner = yield db_1.default.collection('accounts').findOne({
+            'wallet.address': findCollection.owner
+        }, {
+            projection: {
+                _id: 1,
+                wallet: 1,
+            },
+        });
+        if (!findOwner)
+            return res
+                .status(400)
+                .send({ error: 'Unable to mint token due to missing admin wallet' });
+        if (!findToken.whitelist.includes(addressTo.toLowerCase()))
+            return res
+                .status(400)
+                .send({ error: 'The destination address is not allowed to mint the token' });
+        console.log("CHECKPOINT 1 --> ", findOwner);
+        const rpcUrl = (0, dappUtils_1.getRpcEndpoint)(findToken.chainId);
+        (0, dappUtils_1.setProvider)(rpcUrl);
+        const walletPvtKey = findOwner.wallet.signingKey.privateKey;
+        const merkleProof = yield (0, dappUtils_1.getMerkleProof)(addressTo, findToken.whitelist);
+        const contractInstance = yield (0, dappUtils_1.getContractWithWallet)(Rewards_json_1.default, findCollection.contractAddress, walletPvtKey);
+        console.log("CHECKPOINT 2 ---> ", merkleProof);
+        const onChainTxn = yield contractInstance.mint(addressTo, tokenId, merkleProof);
+        console.log("CHECKPOINT 3 --> ", onChainTxn);
+        const txnObject = {
+            from: findOwner.wallet.address,
+            to: findCollection.contractAddress,
+            transactionHash: onChainTxn.hash,
+            chainId: Number(findToken.chainId),
+            status: 'pending',
+            transactionType: 'MINT',
+            timestamp: new Date(),
+        };
+        const dbInsertTxn = yield db_1.default.collection('transactions').insertOne(txnObject);
+        mintTransactionId = new mongodb_1.ObjectId(dbInsertTxn.insertedId);
+        const txReceipt = yield onChainTxn.wait();
+        console.log("CHECKPOINT 4 --> ", txReceipt);
+        /** blockchain transaction MINTED **/
+        yield db_1.default.collection('transactions').findOneAndUpdate({ _id: mintTransactionId }, {
+            $set: {
+                status: txReceipt.status === 1 ? 'completed' : "failed",
+            },
+        }, {
+            returnDocument: 'after',
+            projection: {
+                _id: 1,
+                transactionHash: 1,
+            },
+        });
+        console.log("CHECKPOINT 5 --> ", mintTransactionId);
+        const tokenHistory = {
+            tokenId: tokenId,
+            collectionId: findCollection._id,
+            mintTransaction: mintTransactionId,
+            owner: addressTo.toLowerCase(),
+            claimedOn: new Date(),
+        };
+        yield db_1.default.collection('tokenHistory').insertOne(tokenHistory);
+        const responseData = {
+            mintedItemId: findToken._id,
+            txnStatus: txReceipt.status,
+            txnHash: onChainTxn.hash
+        };
+        console.log("CHECKPOINT 6 --> ", responseData);
+        return res.json(responseData);
     }
     catch (err) {
         console.error(`Error (${routeName}): ${err}`);

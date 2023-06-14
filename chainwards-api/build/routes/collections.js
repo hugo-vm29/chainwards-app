@@ -99,7 +99,6 @@ router.get('/transaction/status/:txnId', (req, res, next) => __awaiter(void 0, v
                 .status(400)
                 .send({ error: 'No transaction was found for the provided transaction hash.' });
         if (findTxn.status == 'pending') {
-            //0x0139a72438b3428206fb92b3e0b94403d929fbb6a646bfc0b7ec975a6a1a09f0
             const rpcUrl = (0, dappUtils_1.getRpcEndpoint)(findTxn.chainId);
             (0, dappUtils_1.setProvider)(rpcUrl);
             const txReceipt = yield (0, dappUtils_1.getTransactionReceipt)(findTxn.transactionHash);

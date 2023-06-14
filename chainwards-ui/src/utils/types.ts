@@ -111,3 +111,33 @@ export type PatchClaimersReqBody = {
   from: string;
   txnHash: string;
 };
+
+/** Claiming tokens **/
+
+export type ClaimableTokensResponse = {
+  _id: string;
+  tokenId: number;
+  whitelist: string[];
+  chainId: number;
+  collectionInfo: {
+    _id: string;
+    name: string;
+    contractAddress: string;
+  };
+};
+
+export type TokenToClaim = {
+  claimRequestId: string;
+  tokenId: number;
+  tokenName: string;
+  image: string;
+  collectionName: string;
+  collectionId: string;
+  chainId: number;
+};
+
+export type MintTokenReqBody = {
+  tokenId: number;
+  collectionId: string;
+  addressTo: string;
+};

@@ -67,12 +67,33 @@ export const getTransactionReceipt = async (txHash: string) => {
   return txReceipt;
 };
 
-export const getMerkleRoot = (whitelist: string[]) => {
-  const leaves = whitelist.map((addr) => ethers.keccak256(addr));
-  const merkleTree = new MerkleTree(leaves, ethers.keccak256, { sortPairs: true });
-  const merkleRootHash = merkleTree.getHexRoot();
-  return merkleRootHash;
+/*** contract interaction ***/
+
+const getWallet = (privateKey: string) => {
+  if (!privateKey) throw new ReferenceError('No privateKey provided for getWallet');
+  const provider = getProvider();
+  return new ethers.Wallet(privateKey, provider);
 };
+
+export const getContractWithWallet = async (
+  contractJson: any,
+  contractAddr: string,
+  walletAddr: string,
+) => {
+  const walletAccount = await getWallet(walletAddr);
+  const contractInstance = new ethers.Contract(
+    contractAddr,
+    contractJson.abi,
+    walletAccount,
+  );
+
+  //const contract = new ethers.Contract(address, contractJson.abi, provider);
+  //const contractWithSigner = contract.connect(signer);
+
+  return contractInstance;
+};
+
+/*** address validation ***/
 
 export const validateAddress = (address: string) => {
   return ethers.isAddress(address);
@@ -98,32 +119,19 @@ export const validateAdressArray = (addressArray: string[]) => {
   return filteredArray;
 };
 
-// const getAlchemyConfig = (chainId: number) => {
+/*** merkle trees ***/
 
-//   let network = Network.ETH_GOERLI;
-//   let apiKey =  config.get<string>("goerli_api_key");
+export const getMerkleRoot = (whitelist: string[]) => {
+  const leaves = whitelist.map((addr) => ethers.keccak256(addr));
+  const merkleTree = new MerkleTree(leaves, ethers.keccak256, { sortPairs: true });
+  const merkleRootHash = merkleTree.getHexRoot();
+  return merkleRootHash;
+};
 
-//   if(chainId == 80001){
-//     network = Network.MATIC_MUMBAI;
-//     apiKey = config.get("mumbai_api_key");
-//   }
-
-//   const alchemySettings = {
-//     apiKey: apiKey,
-//     network: network
-//   }
-
-//   return alchemySettings;
-// }
-
-// export const getTransactionReceipt = async(txHash: string, chainId: number) => {
-
-//   try{
-//     const settings = getAlchemyConfig(chainId);
-//     const alchemy = new Alchemy(settings);
-//     const txReceipt = await alchemy.core.getTransactionReceipt(txHash);
-//     return txReceipt;
-//   }catch(err){
-//     return err;
-//   }
-// }
+export const getMerkleProof = (toAddress: string, whitelist: string[]) => {
+  const leaves = whitelist.map((addr) => ethers.keccak256(addr));
+  const merkleTree = new MerkleTree(leaves, ethers.keccak256, { sortPairs: true });
+  const hashedAddress = ethers.keccak256(toAddress);
+  const proof = merkleTree.getHexProof(hashedAddress);
+  return proof;
+};

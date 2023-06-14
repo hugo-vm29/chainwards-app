@@ -60,7 +60,7 @@ const PageLayout: FunctionComponent<PageLayoutRouteProps> = ({ children }) => {
             <img src={viteLogo} alt="Vite logo" style={{ height: '3em' }} />
           </Box>
 
-          <Box sx={{ flexGrow: 1 }}>
+          <Box display="flex" sx={{ flexGrow: 1 }}>
             {pathname !== '/' &&
               navItems.map((item, index) => (
                 <Button

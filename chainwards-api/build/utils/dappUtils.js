@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.validateAdressArray = exports.stringToAdressArray = exports.validateAddress = exports.getMerkleRoot = exports.getTransactionReceipt = exports.getRpcEndpoint = exports.setProvider = exports.createWallet = void 0;
+exports.getMerkleProof = exports.getMerkleRoot = exports.validateAdressArray = exports.stringToAdressArray = exports.validateAddress = exports.getContractWithWallet = exports.getTransactionReceipt = exports.getRpcEndpoint = exports.setProvider = exports.createWallet = void 0;
 const config_1 = __importDefault(require("config"));
 const ethers_1 = require("ethers");
 const merkletreejs_1 = require("merkletreejs");
@@ -76,13 +76,28 @@ const getTransactionReceipt = (txHash) => __awaiter(void 0, void 0, void 0, func
     return txReceipt;
 });
 exports.getTransactionReceipt = getTransactionReceipt;
-const getMerkleRoot = (whitelist) => {
-    const leaves = whitelist.map((addr) => ethers_1.ethers.keccak256(addr));
-    const merkleTree = new merkletreejs_1.MerkleTree(leaves, ethers_1.ethers.keccak256, { sortPairs: true });
-    const merkleRootHash = merkleTree.getHexRoot();
-    return merkleRootHash;
+/*** contract interaction ***/
+const getSignerAccount = (address) => {
+    if (!address)
+        throw new ReferenceError('No address provided for getSigner');
+    const provider = getProvider();
+    return provider.getSigner(address);
 };
-exports.getMerkleRoot = getMerkleRoot;
+const getWallet = (privateKey) => {
+    if (!privateKey)
+        throw new ReferenceError('No privateKey provided for getWallet');
+    const provider = getProvider();
+    return new ethers_1.ethers.Wallet(privateKey, provider);
+};
+const getContractWithWallet = (contractJson, contractAddr, walletAddr) => __awaiter(void 0, void 0, void 0, function* () {
+    const walletAccount = yield getWallet(walletAddr);
+    const contractInstance = new ethers_1.ethers.Contract(contractAddr, contractJson.abi, walletAccount);
+    //const contract = new ethers.Contract(address, contractJson.abi, provider);
+    //const contractWithSigner = contract.connect(signer);
+    return contractInstance;
+});
+exports.getContractWithWallet = getContractWithWallet;
+/*** address validation ***/
 const validateAddress = (address) => {
     return ethers_1.ethers.isAddress(address);
 };
@@ -103,26 +118,19 @@ const validateAdressArray = (addressArray) => {
     return filteredArray;
 };
 exports.validateAdressArray = validateAdressArray;
-// const getAlchemyConfig = (chainId: number) => {
-//   let network = Network.ETH_GOERLI;
-//   let apiKey =  config.get<string>("goerli_api_key");
-//   if(chainId == 80001){
-//     network = Network.MATIC_MUMBAI;
-//     apiKey = config.get("mumbai_api_key");
-//   }
-//   const alchemySettings = {
-//     apiKey: apiKey,
-//     network: network
-//   }
-//   return alchemySettings;
-// }
-// export const getTransactionReceipt = async(txHash: string, chainId: number) => {
-//   try{
-//     const settings = getAlchemyConfig(chainId);
-//     const alchemy = new Alchemy(settings);
-//     const txReceipt = await alchemy.core.getTransactionReceipt(txHash);
-//     return txReceipt;
-//   }catch(err){
-//     return err;
-//   }
-// }
+/*** merkle trees ***/
+const getMerkleRoot = (whitelist) => {
+    const leaves = whitelist.map((addr) => ethers_1.ethers.keccak256(addr));
+    const merkleTree = new merkletreejs_1.MerkleTree(leaves, ethers_1.ethers.keccak256, { sortPairs: true });
+    const merkleRootHash = merkleTree.getHexRoot();
+    return merkleRootHash;
+};
+exports.getMerkleRoot = getMerkleRoot;
+const getMerkleProof = (toAddress, whitelist) => {
+    const leaves = whitelist.map((addr) => ethers_1.ethers.keccak256(addr));
+    const merkleTree = new merkletreejs_1.MerkleTree(leaves, ethers_1.ethers.keccak256, { sortPairs: true });
+    let hashedAddress = ethers_1.ethers.keccak256(toAddress);
+    const proof = merkleTree.getHexProof(hashedAddress);
+    return proof;
+};
+exports.getMerkleProof = getMerkleProof;

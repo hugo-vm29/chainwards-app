@@ -95,6 +95,18 @@ export const updateTokenClaimers = (data: types.PatchClaimersReqBody) => {
   return result;
 };
 
+export const getTokensToClaim = (pubKey: string) => {
+  const url = `${apiUrl}/tokens/toClaim/${pubKey}`;
+  const result = axios.get(url);
+  return result;
+};
+
+export const mintToken = (data: types.MintTokenReqBody) => {
+  const url = `${apiUrl}/tokens/mint`;
+  const result = axios.post(url, data);
+  return result;
+};
+
 /** Merkle trees **/
 
 export const newMerkleRoot = (data: string) => {

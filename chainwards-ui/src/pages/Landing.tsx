@@ -104,6 +104,20 @@ const Landing = () => {
     window.location.reload();
   };
 
+  /** CLAIM A TOKEN (enter as guest user) **/
+
+  const handleGuestLogin = async () => {
+    if (isMetamaskInstalled) {
+      if (userWallet !== '') {
+        navigate('/claim');
+      } else {
+        await connectMetaMask();
+      }
+    } else {
+      setShowMetamaskError(true);
+    }
+  };
+
   return (
     <Grid container>
       <Grid item xs={5} sx={{ pt: '10em', px: 5 }}>
@@ -153,7 +167,7 @@ const Landing = () => {
                       endIcon={<TokenIcon sx={{ fontSize: 50 }} />}
                       size="large"
                       onClick={() => {
-                        navigate('/claim');
+                        handleGuestLogin();
                       }}
                     >
                       Claim my NFT
