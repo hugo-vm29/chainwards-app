@@ -4,18 +4,19 @@ import { FunctionComponent } from 'react';
 import PropTypes from 'prop-types';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
-import viteLogo from '/vite.svg';
+import headerLogo from '/sample_logo.png';
 import Button from '@mui/material/Button';
+import Link from '@mui/material/Link';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useRegisteredAccount } from '../../utils/hooks';
 
 const PUBLIC_NAV_ITEMS = [
   {
-    name: 'Claim My Reward',
+    name: 'Claim NFT',
     url: '/claim',
   },
   {
-    name: 'My Profile',
+    name: 'My NFTs',
     url: '/profile',
   },
 ];
@@ -57,7 +58,9 @@ const PageLayout: FunctionComponent<PageLayoutRouteProps> = ({ children }) => {
       >
         <Toolbar sx={{ py: 1 }}>
           <Box sx={{ mr: 5 }}>
-            <img src={viteLogo} alt="Vite logo" style={{ height: '3em' }} />
+            <Link href="/">
+              <img src={headerLogo} alt="logo" style={{ height: '3em' }} />
+            </Link>
           </Box>
 
           <Box display="flex" sx={{ flexGrow: 1 }}>

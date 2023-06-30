@@ -77,12 +77,6 @@ const getTransactionReceipt = (txHash) => __awaiter(void 0, void 0, void 0, func
 });
 exports.getTransactionReceipt = getTransactionReceipt;
 /*** contract interaction ***/
-const getSignerAccount = (address) => {
-    if (!address)
-        throw new ReferenceError('No address provided for getSigner');
-    const provider = getProvider();
-    return provider.getSigner(address);
-};
 const getWallet = (privateKey) => {
     if (!privateKey)
         throw new ReferenceError('No privateKey provided for getWallet');
@@ -129,7 +123,7 @@ exports.getMerkleRoot = getMerkleRoot;
 const getMerkleProof = (toAddress, whitelist) => {
     const leaves = whitelist.map((addr) => ethers_1.ethers.keccak256(addr));
     const merkleTree = new merkletreejs_1.MerkleTree(leaves, ethers_1.ethers.keccak256, { sortPairs: true });
-    let hashedAddress = ethers_1.ethers.keccak256(toAddress);
+    const hashedAddress = ethers_1.ethers.keccak256(toAddress);
     const proof = merkleTree.getHexProof(hashedAddress);
     return proof;
 };

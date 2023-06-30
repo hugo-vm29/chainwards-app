@@ -35,3 +35,44 @@ export const getCollectionPipeline = () => {
 
   return collectionsPipeline;
 };
+
+export const getDistinctContractsForOwner = (ownerAddr: string) => {
+  const qryPipeline = [
+    {
+      $match: {
+        owner: ownerAddr,
+      },
+    },
+    {
+      $lookup: {
+        from: 'collections',
+        localField: 'collectionId',
+        foreignField: '_id',
+        as: 'collectionInfo',
+      },
+    },
+
+    {
+      $unwind: {
+        path: '$collectionInfo',
+      },
+    },
+    {
+      $project: {
+        tokenId: 1,
+        collectionId: 1,
+        'collectionInfo.name': 1,
+        'collectionInfo.contractAddress': 1,
+        'collectionInfo.chainId': 1,
+      },
+    },
+    {
+      $group: {
+        _id: '$collectionInfo.chainId',
+        contracts: { $push: '$$ROOT' },
+      },
+    },
+  ];
+
+  return qryPipeline;
+};

@@ -15,6 +15,9 @@ import {
 } from '../utils/dappUtils';
 import { ObjectId } from 'mongodb';
 import RewardsContract from '../contracts/Rewards.json';
+import { getTokensForOwner } from '../utils/alchemyHelper';
+import { getDistinctContractsForOwner } from '../utils/dbHelper';
+import { OwnedNft } from 'alchemy-sdk';
 
 const memStorage = multer.memoryStorage();
 const upload = multer({ storage: memStorage });
@@ -430,6 +433,61 @@ router.post('/mint', async (req: Request, res: Response, next) => {
   } catch (err) {
     console.error(`Error (${routeName}): ${err}`);
 
+    return next(err);
+  }
+});
+
+router.get('/history/redemptions/:pubKey', async (req: Request, res: Response, next) => {
+  const routeName = 'get/history/redemptions/:pubKey';
+
+  try {
+    let { pubKey } = req.params;
+    pubKey = pubKey.toLowerCase();
+
+    const qryPipeline = getDistinctContractsForOwner(pubKey);
+
+    const dbReponse = await db
+      .collection('tokenHistory')
+      .aggregate(qryPipeline)
+      .toArray();
+
+    //console.log("dbReponse", dbReponse);
+
+    if (dbReponse.length == 0) return res.json([]);
+
+    const promises = dbReponse.map(async (item: any) => {
+      const distinctContracts = item.contracts.map(
+        (contractItem: any) => contractItem.collectionInfo.contractAddress,
+      );
+      const alltokensForChain = await getTokensForOwner(
+        pubKey,
+        item._id,
+        distinctContracts,
+      );
+
+      const formattedResponse = alltokensForChain.ownedNfts.map((tokenItem: OwnedNft) => {
+        return {
+          tokenId: tokenItem.tokenId,
+          tokeName: tokenItem.title,
+          collectionName: tokenItem.contract.name,
+          contractAddress: tokenItem.contract.address,
+          chainId: item._id,
+          imageUrl: tokenItem.rawMetadata?.image?.replace('ipfs://', '') || '',
+        };
+      });
+
+      return {
+        chainId: item._id,
+        totalOwned: alltokensForChain.totalCount,
+        ownedTokens: formattedResponse,
+      };
+    });
+
+    const finalResponse = await Promise.all(promises);
+    //console.log(finalResponse);
+    return res.json(finalResponse);
+  } catch (err: any) {
+    console.error(`Error (${routeName}): ${err}`);
     return next(err);
   }
 });

@@ -12,32 +12,31 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getTransactionReceipt = void 0;
-// importing the Alchemy SDK
+exports.getTokensForOwner = void 0;
 const alchemy_sdk_1 = require("alchemy-sdk");
 const config_1 = __importDefault(require("config"));
-const getAlchemyConfig = (chainId) => {
-    let network = alchemy_sdk_1.Network.ETH_GOERLI;
-    let apiKey = config_1.default.get("goerli_api_key");
-    if (chainId == 80001) {
-        network = alchemy_sdk_1.Network.MATIC_MUMBAI;
-        apiKey = config_1.default.get("mumbai_api_key");
+const getAlchemySettings = (chainId) => {
+    let settings;
+    if (chainId == 5) {
+        settings = {
+            apiKey: config_1.default.get('goerli_api_key'),
+            network: alchemy_sdk_1.Network.ETH_GOERLI
+        };
     }
-    const alchemySettings = {
-        apiKey: apiKey,
-        network: network
-    };
-    return alchemySettings;
+    else if (chainId == 80001) {
+        settings = {
+            apiKey: config_1.default.get('mumbai_api_key'),
+            network: alchemy_sdk_1.Network.MATIC_MUMBAI
+        };
+    }
+    return settings;
 };
-const getTransactionReceipt = (txHash, chainId) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const settings = getAlchemyConfig(chainId);
-        const alchemy = new alchemy_sdk_1.Alchemy(settings);
-        const txReceipt = yield alchemy.core.getTransactionReceipt(txHash);
-        return txReceipt;
-    }
-    catch (err) {
-        return err;
-    }
+const getTokensForOwner = (walletAddress, chainId, distinctContracts) => __awaiter(void 0, void 0, void 0, function* () {
+    const settings = getAlchemySettings(chainId);
+    const alchemy = new alchemy_sdk_1.Alchemy(settings);
+    const nftsForOwner = yield alchemy.nft.getNftsForOwner(walletAddress, {
+        contractAddresses: distinctContracts
+    });
+    return nftsForOwner;
 });
-exports.getTransactionReceipt = getTransactionReceipt;
+exports.getTokensForOwner = getTokensForOwner;

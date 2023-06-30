@@ -141,3 +141,14 @@ export type MintTokenReqBody = {
   collectionId: string;
   addressTo: string;
 };
+
+/** Profile **/
+
+export type RedeemedTokenItem = {
+  tokenId: number;
+  tokeName: string;
+  collectionName: string;
+  contractAddress: string;
+  chainId: number;
+  imageUrl: string;
+};

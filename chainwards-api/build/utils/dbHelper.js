@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getCollectionPipeline = void 0;
+exports.getDistinctContractsForOwner = exports.getCollectionPipeline = void 0;
 const getCollectionPipeline = () => {
     const collectionsPipeline = [
         {
@@ -38,3 +38,42 @@ const getCollectionPipeline = () => {
     return collectionsPipeline;
 };
 exports.getCollectionPipeline = getCollectionPipeline;
+const getDistinctContractsForOwner = (ownerAddr) => {
+    const qryPipeline = [
+        {
+            $match: {
+                'owner': ownerAddr
+            }
+        },
+        {
+            $lookup: {
+                from: 'collections',
+                localField: 'collectionId',
+                foreignField: '_id',
+                as: 'collectionInfo',
+            }
+        },
+        {
+            $unwind: {
+                path: '$collectionInfo'
+            }
+        },
+        {
+            $project: {
+                tokenId: 1,
+                collectionId: 1,
+                'collectionInfo.name': 1,
+                'collectionInfo.contractAddress': 1,
+                'collectionInfo.chainId': 1
+            }
+        },
+        {
+            $group: {
+                _id: '$collectionInfo.chainId',
+                contracts: { $push: "$$ROOT" }
+            }
+        }
+    ];
+    return qryPipeline;
+};
+exports.getDistinctContractsForOwner = getDistinctContractsForOwner;

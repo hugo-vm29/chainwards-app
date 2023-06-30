@@ -60,7 +60,7 @@ const MetamaskProvider = ({ children }: MetamaskProviderProps) => {
   const updateWallet = useCallback(async () => {
     try {
       const accounts = await provider.send('eth_accounts', []);
-      console.log('updateWallet', accounts);
+      //console.log('updateWallet', accounts);
       if (accounts.length > 0) {
         localStorage.clear();
         const newAccount = await provider.getSigner();

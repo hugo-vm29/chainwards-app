@@ -4,3 +4,5 @@ export const RPC_ENDPOINTS = {
   polygon: '',
   mainnet: '',
 };
+
+export const BASE_METADATA_URI = 'https://nftstorage.link/ipfs/';

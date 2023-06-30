@@ -107,6 +107,12 @@ export const mintToken = (data: types.MintTokenReqBody) => {
   return result;
 };
 
+export const getTokensOwnedTokens = (pubKey: string) => {
+  const url = `${apiUrl}/tokens/history/redemptions/${pubKey}`;
+  const result = axios.get(url);
+  return result;
+};
+
 /** Merkle trees **/
 
 export const newMerkleRoot = (data: string) => {

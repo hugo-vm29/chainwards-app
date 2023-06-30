@@ -64,6 +64,7 @@ router.post('/', async (req: Request, res: Response, next) => {
       description,
       transactionId: txnResponse.insertedId,
       contractAddress: '',
+      chainId: Number(chainId),
       status: 'deploying', //active
       blockIssuers: false,
       createdOn: new Date(),

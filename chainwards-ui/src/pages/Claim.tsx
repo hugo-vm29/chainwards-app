@@ -105,7 +105,7 @@ const Claim = () => {
       const apiResponse = await getTokensToClaim(walletAddress);
 
       if (apiResponse.status == 200) {
-        console.log('apiResponse', apiResponse.data);
+        //console.log('apiResponse', apiResponse.data);
 
         const signer: any = await getRpcSigner();
         if (!signer) throw new Error('Unable to get signer account');
@@ -120,7 +120,7 @@ const Claim = () => {
         setLoadingData(false);
       }
     } catch (err: any) {
-      setLoadingData(true);
+      setLoadingData(false);
       console.log('Unable to retrieve data', err?.message || '');
     }
   };

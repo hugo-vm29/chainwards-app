@@ -61,6 +61,7 @@ router.post('/', (req, res, next) => __awaiter(void 0, void 0, void 0, function*
             description,
             transactionId: txnResponse.insertedId,
             contractAddress: '',
+            chainId: Number(chainId),
             status: 'deploying',
             blockIssuers: false,
             createdOn: new Date(),

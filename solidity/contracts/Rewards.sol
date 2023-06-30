@@ -150,6 +150,24 @@ contract Rewards is ERC1155, AccessControl, ERC1155URIStorage {
     }
 
     /**
+     * @notice Verify if token is mintable 
+    */
+    function isTokenMintable(uint256 tokenId) public view returns (bool){
+        return _listedTokens[tokenId].claimable;
+    }
+
+    /**
+     * @notice Temporarily block minting for a token
+    */
+    function blockTokenMint(uint256 tokenId, bool newStatus) onlyRole(ISSUER_ROLE) public {
+        
+        require(  _listedTokens[tokenId].issuer == msg.sender || 
+                 hasRole(DEFAULT_ADMIN_ROLE, msg.sender) , "Action not allowed: blockTokenMint");
+
+        _listedTokens[tokenId].claimable = newStatus;
+    }
+
+    /**
      * @notice Change merkle root hash for token id
      */
     function setMerkleRoot(uint256 tokenId,bytes32 merkleRootHash) onlyRole(ISSUER_ROLE) public {
@@ -186,7 +204,7 @@ contract Rewards is ERC1155, AccessControl, ERC1155URIStorage {
         uint256 newTokenId = _tokenIds.current();
         
         _setURI(newTokenId, tokenURI);
-        _mint( address(this) ,tokenId, 1, "");
+        _mint( address(this) , newTokenId , 1, "");
 
         ListedToken storage newListedToken = _listedTokens[newTokenId];
         newListedToken.tokenId = newTokenId;

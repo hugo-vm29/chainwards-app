@@ -94,3 +94,13 @@ export const checkApplicationSession = () => {
   }
   return null;
 };
+
+export const formatLongName = (text: string) => {
+  try {
+    if (!text) return '';
+    if (text.length <= 20) return text;
+    return `${text.slice(0, 20)}...${text.slice(-8)}`;
+  } catch (err) {
+    return '';
+  }
+};
