@@ -16,6 +16,7 @@ import { getNetworkName } from '../utils/helpers';
 import { BASE_METADATA_URI } from '../utils/constants';
 import { useMetamaskContext } from '../contexts/MetamaskProvider';
 import { useRegisteredAccount } from '../utils/hooks';
+import WalletBox from '../components/shared/WalletBox';
 
 const Collections = () => {
   const loggedIn = useRegisteredAccount();
@@ -139,12 +140,7 @@ const Collections = () => {
             the collections associated to your active account.
           </Typography>
 
-          <Box sx={{ width: '30em', my: 5, p: 3, border: '1px solid #ddd' }}>
-            <Typography>
-              <strong>My wallet: </strong>
-              {userWallet}
-            </Typography>
-          </Box>
+          <WalletBox walletAddress={userWallet} />
 
           <Box sx={{ mt: 8, mb: 10 }}>
             <Button

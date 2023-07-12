@@ -1,62 +1,34 @@
-import {
-  useState,
-  useContext,
-  createContext,
-  FunctionComponent,
-  useCallback,
-  useMemo,
-  useEffect,
-} from 'react';
-import PropTypes from 'prop-types';
+import { useContext, createContext, useEffect } from 'react';
 import { useLocation, matchPath, useNavigate } from 'react-router-dom';
 
-//import SetStateAction,Dispatch
-// interface IUserContext {
-//   name: string;
-//   setName: Dispatch<SetStateAction<string>>;
-// }
+/* eslint-disable @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-function ,  @typescript-eslint/ban-types, no-empty */
 
-/* eslint-disable @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-function */
+type UserContextType = {};
 
-export const UserContext = createContext({
-  name: '',
-  updateName: (param: string) => {},
-});
+const defaultState = {};
 
-const UserInfoProvider: FunctionComponent<UserInfoProviderProps> = ({ children }) => {
+export const UserInfoContext = createContext<UserContextType>(defaultState);
+
+const UserInfoProvider = ({ children }: UserInfoProviderProps) => {
   const { pathname } = useLocation();
-  const [name, setName] = useState('default');
   const navigate = useNavigate();
-
-  const updateName = useCallback((newName: string) => {
-    setName(newName);
-    navigate('/dashboard');
-  }, []);
-
-  const contextValue = useMemo(
-    () => ({
-      name,
-      updateName,
-    }),
-    [name, updateName],
-  );
 
   useEffect(() => {
     if (matchPath('/', pathname)) {
-      //setName("ALEJANDRO");
-      //window.location.href = "/dashboard";
     }
   }, []);
 
-  return <UserContext.Provider value={contextValue}>{children}</UserContext.Provider>;
+  const contextValue = {};
+
+  return (
+    <UserInfoContext.Provider value={contextValue}>{children}</UserInfoContext.Provider>
+  );
 };
 
-const useUserContext = () => useContext(UserContext);
+const useUserContext = () => useContext(UserInfoContext);
 
-const propTypes = {
-  children: PropTypes.node.isRequired,
+type UserInfoProviderProps = {
+  children: string | JSX.Element | JSX.Element[];
 };
-type UserInfoProviderProps = PropTypes.InferProps<typeof propTypes>;
-UserInfoProvider.propTypes = propTypes;
 
 export { UserInfoProvider, useUserContext };

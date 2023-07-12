@@ -370,13 +370,13 @@ router.get('/history/redemptions/:pubKey', (req, res, next) => __awaiter(void 0,
                     collectionName: tokenItem.contract.name,
                     contractAddress: tokenItem.contract.address,
                     chainId: item._id,
-                    imageUrl: ((_b = (_a = tokenItem.rawMetadata) === null || _a === void 0 ? void 0 : _a.image) === null || _b === void 0 ? void 0 : _b.replace('ipfs://', '')) || "",
+                    imageUrl: ((_b = (_a = tokenItem.rawMetadata) === null || _a === void 0 ? void 0 : _a.image) === null || _b === void 0 ? void 0 : _b.replace('ipfs://', '')) || '',
                 };
             });
             return {
                 chainId: item._id,
                 totalOwned: alltokensForChain.totalCount,
-                ownedTokens: formattedResponse
+                ownedTokens: formattedResponse,
             };
         }));
         const finalResponse = yield Promise.all(promises);

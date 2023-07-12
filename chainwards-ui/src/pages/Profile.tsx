@@ -148,7 +148,7 @@ const MyProfile = () => {
                 }}
               >
                 {tokensList.map((item, index) => (
-                  <Card key={index} elevation={0} sx={{ border: '1px solid #eaeaea' }}>
+                  <Card key={index} elevation={0} sx={{ border: '1px solid #968572' }}>
                     <ImageListItem>
                       <img
                         src={`${BASE_METADATA_URI}${item.imageUrl}?w=164&h=164&fit=crop&auto=format`}
@@ -188,7 +188,7 @@ const MyProfile = () => {
                               }}
                               //sx={{px: 0}}
                             >
-                              <LaunchIcon />
+                              <LaunchIcon color="info" />
                             </IconButton>
                           </Tooltip>
                         </Box>

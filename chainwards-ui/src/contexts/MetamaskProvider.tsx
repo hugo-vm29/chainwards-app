@@ -1,6 +1,7 @@
 import { useState, useContext, useEffect, createContext, useCallback } from 'react';
 import { ethers } from 'ethers';
 import detectEthereumProvider from '@metamask/detect-provider';
+import { clearApplicationSession } from '../utils/auth';
 
 /* eslint-disable @typescript-eslint/no-empty-function */
 
@@ -82,7 +83,7 @@ const MetamaskProvider = ({ children }: MetamaskProviderProps) => {
 
   const metamaskChangesListener = () => {
     setUserWallet('');
-    localStorage.clear();
+    clearApplicationSession();
     window.location.href = '/';
   };
 

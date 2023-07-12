@@ -8,18 +8,19 @@ import Stack from '@mui/material/Stack';
 import Badge from '@mui/material/Badge';
 import SentimentVeryDissatisfiedIcon from '@mui/icons-material/SentimentVeryDissatisfied';
 import Tooltip from '@mui/material/Tooltip';
-import Loader from '../components/shared/Loader';
-import { getTokensToClaim, mintToken } from '../utils/fetch';
-import { useMetamaskContext } from '../contexts/MetamaskProvider';
 import Avatar from '@mui/material/Avatar';
-import * as types from '../utils/types';
-import RewardsContract from '../contracts/Rewards.json';
-import { BASE_METADATA_URI } from '../utils/constants';
-import PolygonIcon from '../assets/PolygonIcon';
-import EthereumIcon from '../assets/EthereumIcon';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 import CircularProgress from '@mui/material/CircularProgress';
+import RewardsContract from '../contracts/Rewards.json';
+import PolygonIcon from '../assets/PolygonIcon';
+import EthereumIcon from '../assets/EthereumIcon';
+import * as types from '../utils/types';
+import { BASE_METADATA_URI } from '../utils/constants';
+import Loader from '../components/shared/Loader';
+import { getTokensToClaim, mintToken } from '../utils/fetch';
+import { useMetamaskContext } from '../contexts/MetamaskProvider';
+import WalletBox from '../components/shared/WalletBox';
 
 const styles = {
   rootContainer: {
@@ -201,10 +202,7 @@ const Claim = () => {
           Use your metamask account or any ethereum account to claim your NFTs !
         </Typography>
 
-        <Stack direction="row" sx={{ mt: 5, p: 3, border: '1px solid #ddd' }}>
-          <Typography sx={{ mr: 2, fontWeight: 'bold' }}> My Wallet </Typography>
-          <Typography> {userWallet} </Typography>
-        </Stack>
+        <WalletBox walletAddress={userWallet} />
 
         <Loader loading={loadingData} sx={styles.loader} size={50} />
 

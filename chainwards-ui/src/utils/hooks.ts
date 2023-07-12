@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { checkApplicationSession } from './helpers';
+import { checkApplicationSession } from '../utils/auth';
 
 export const useRegisteredAccount = (disableRedirect = false) => {
   const [accountVerified, setAccountVerified] = useState(false);
@@ -11,7 +11,7 @@ export const useRegisteredAccount = (disableRedirect = false) => {
       window.location.href = '/';
     }
 
-    setAccountVerified(Boolean(appSession));
+    setAccountVerified(appSession !== null);
   }, [setAccountVerified, disableRedirect]);
 
   return accountVerified;

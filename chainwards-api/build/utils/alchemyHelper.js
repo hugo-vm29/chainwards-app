@@ -20,13 +20,13 @@ const getAlchemySettings = (chainId) => {
     if (chainId == 5) {
         settings = {
             apiKey: config_1.default.get('goerli_api_key'),
-            network: alchemy_sdk_1.Network.ETH_GOERLI
+            network: alchemy_sdk_1.Network.ETH_GOERLI,
         };
     }
     else if (chainId == 80001) {
         settings = {
             apiKey: config_1.default.get('mumbai_api_key'),
-            network: alchemy_sdk_1.Network.MATIC_MUMBAI
+            network: alchemy_sdk_1.Network.MATIC_MUMBAI,
         };
     }
     return settings;
@@ -35,7 +35,7 @@ const getTokensForOwner = (walletAddress, chainId, distinctContracts) => __await
     const settings = getAlchemySettings(chainId);
     const alchemy = new alchemy_sdk_1.Alchemy(settings);
     const nftsForOwner = yield alchemy.nft.getNftsForOwner(walletAddress, {
-        contractAddresses: distinctContracts
+        contractAddresses: distinctContracts,
     });
     return nftsForOwner;
 });

@@ -13,6 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const db_1 = __importDefault(require("../db"));
 const dappUtils_1 = require("../utils/dappUtils");
 /* eslint-disable camelcase */
@@ -57,6 +58,37 @@ router.get('/findByWallet/:walletAddr', (req, res, next) => __awaiter(void 0, vo
         if (!accountsData)
             return res.status(404).send({ error: 'No account found' });
         return res.json(accountsData);
+    }
+    catch (err) {
+        console.error(`Error: ${err}`);
+        return next(err);
+    }
+}));
+router.get('/authenticate/:walletAddr', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { walletAddr } = req.params;
+        const accountsData = yield db_1.default.collection('accounts').findOne({ 'wallet.address': walletAddr.toLowerCase() }, {
+            projection: {
+                _id: 1,
+                displayName: 1,
+                'wallet.address': 1,
+            },
+        });
+        if (!accountsData)
+            return res.status(404).send({ error: 'No account found' });
+        const tokenPayload = {
+            userId: accountsData._id,
+            displayname: accountsData.displayName,
+            walletAddress: accountsData.wallet.address
+        };
+        const options = {
+            expiresIn: '1d',
+            issuer: 'chainwards-api',
+            audience: 'chainwards-ui',
+        };
+        const privateKey = '';
+        const accessToken = jsonwebtoken_1.default.sign(tokenPayload, privateKey, options);
+        return res.json({ token: accessToken });
     }
     catch (err) {
         console.error(`Error: ${err}`);

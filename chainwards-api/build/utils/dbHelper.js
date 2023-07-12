@@ -42,8 +42,8 @@ const getDistinctContractsForOwner = (ownerAddr) => {
     const qryPipeline = [
         {
             $match: {
-                'owner': ownerAddr
-            }
+                owner: ownerAddr,
+            },
         },
         {
             $lookup: {
@@ -51,12 +51,12 @@ const getDistinctContractsForOwner = (ownerAddr) => {
                 localField: 'collectionId',
                 foreignField: '_id',
                 as: 'collectionInfo',
-            }
+            },
         },
         {
             $unwind: {
-                path: '$collectionInfo'
-            }
+                path: '$collectionInfo',
+            },
         },
         {
             $project: {
@@ -64,15 +64,15 @@ const getDistinctContractsForOwner = (ownerAddr) => {
                 collectionId: 1,
                 'collectionInfo.name': 1,
                 'collectionInfo.contractAddress': 1,
-                'collectionInfo.chainId': 1
-            }
+                'collectionInfo.chainId': 1,
+            },
         },
         {
             $group: {
                 _id: '$collectionInfo.chainId',
-                contracts: { $push: "$$ROOT" }
-            }
-        }
+                contracts: { $push: '$$ROOT' },
+            },
+        },
     ];
     return qryPipeline;
 };

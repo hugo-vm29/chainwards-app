@@ -5,3 +5,5 @@ node_modules
 cache
 artifacts
 mongo
+
+chainwards-api/build/*

@@ -16,6 +16,7 @@ import { setApplicationSession } from '../utils/helpers';
 import NewAccountModal from '../components/accounts/NewAccountModal';
 import metamaskLogo from '/metamask.svg';
 import * as types from '../utils/types';
+import { setApplicationSession as newSession } from '../utils/auth';
 
 /* eslint-disable jsx-a11y/anchor-is-valid */
 
@@ -51,6 +52,7 @@ const Landing = () => {
       const apiResponse = await findAccountByWallet(address);
       if (apiResponse.status == 200) {
         setApplicationSession(apiResponse.data);
+        newSession(apiResponse.data);
         //navigate('/collections', {replace: true});
         window.location.href = '/collections';
       }
@@ -121,7 +123,7 @@ const Landing = () => {
   return (
     <Grid container>
       <Grid item xs={5} sx={{ pt: '10em', px: 5 }}>
-        <Typography variant="h2" noWrap sx={{ mb: 2, fontWeight: 600 }}>
+        <Typography variant="h2" color="secondary" noWrap sx={{ mb: 2, fontWeight: 600 }}>
           ChainWards
         </Typography>
         <Typography variant="h6" sx={{ fontWeight: 400, mb: 4 }}>

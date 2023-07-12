@@ -1,5 +1,13 @@
 /** accounts **/
 
+export type FindAccountResponse = {
+  _id: string;
+  displayName: string;
+  wallet: {
+    address: string;
+  };
+};
+
 export type NewAccountReqBody = {
   publicAddr: string;
   username: string;
