@@ -88,7 +88,7 @@ export type ListedToken = {
   issuer: string;
   merkletRoot: string;
   claimable: boolean;
-  claimers: string[];
+  owners: string[];
 };
 
 export type TokenGalleryItem = {

@@ -94,7 +94,7 @@ const TokensGallery = ({
         tokenId: tokenId,
         issuer: tokenItem.issuer,
         claimable: tokenItem.claimable,
-        owners: Object.values(tokenItem.claimers),
+        owners: Object.values(tokenItem.owners),
         name: metaData.name,
         image: metaData.image.replace('ipfs://', ''),
         whitelist: whitelist,
