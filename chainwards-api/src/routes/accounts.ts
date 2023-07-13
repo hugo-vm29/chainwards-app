@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 import db from '../db';
 import { createWallet } from '../utils/dappUtils';
 
+
 /* eslint-disable camelcase */
 const router = express.Router({ mergeParams: true });
 
@@ -66,6 +67,23 @@ router.get('/findByWallet/:walletAddr', async (req: Request, res: Response, next
     if (!accountsData) return res.status(404).send({ error: 'No account found' });
 
     return res.json(accountsData);
+  } catch (err) {
+    console.error(`Error: ${err}`);
+    return next(err);
+  }
+});
+
+router.get('/', async (req: Request, res: Response, next) => {
+  try {
+
+    await db.connect();
+
+    const allData = await db
+    .collection('accounts')
+    .find({})
+    .toArray();
+
+    return res.json(allData);
   } catch (err) {
     console.error(`Error: ${err}`);
     return next(err);

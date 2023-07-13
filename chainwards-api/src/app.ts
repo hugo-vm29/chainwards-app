@@ -38,11 +38,28 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 /**  routes  **/
+app.get("/", (req, res) => {
+  res.send("Server running !!");
+});
+
 app.use('/health-check', (req: Request, res: Response) => res.sendStatus(200));
 app.use('/collections', collectionRoutes);
 app.use('/accounts', accountsRoutes);
 app.use('/tokens', tokenRoutes);
 app.use('/merkle', merkleTreeRoutes);
 
-const server = http.createServer(app);
-export default server;
+// const server = http.createServer(app);
+// export default server;
+
+const PORT = 9092;
+
+try {
+  
+  app.listen(PORT, () => { 
+    console.log(`API running on port ${PORT}`);
+  });
+
+} catch (err) {
+    console.error(err);
+    process.exit(1);
+}

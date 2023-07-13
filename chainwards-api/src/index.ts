@@ -1,4 +1,4 @@
-import server from './app';
+//import server from './app';
 import db from './db';
 import config from 'config';
 
@@ -10,7 +10,7 @@ async function main() {
     const mongoUrl = config.get<string>('dbUrl');
     await db.connect(mongoUrl);
 
-    server.listen(port);
+    //server.listen(port);
     console.log(`Server is listening on port ${port}`);
   } catch (err: any) {
     console.log('API error', err?.message || '');
