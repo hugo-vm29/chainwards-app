@@ -11,7 +11,7 @@ async function main() {
     await db.connect(mongoUrl);
 
     //server.listen(port);
-    console.log(`Server is listening on port ${port}`);
+    console.log(`Server is listening on port -> ${port}`);
   } catch (err: any) {
     console.log('API error', err?.message || '');
     process.exit(1);
