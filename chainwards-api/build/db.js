@@ -8,15 +8,22 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongodb_1 = require("mongodb");
+const config_1 = __importDefault(require("config"));
 let db;
 let client;
 exports.default = {
-    connect: (connectionUrl) => __awaiter(void 0, void 0, void 0, function* () {
+    connect: (connectionUrl = "") => __awaiter(void 0, void 0, void 0, function* () {
         if (db)
             return db;
         console.log('DB Connecting ...');
+        if (!connectionUrl || connectionUrl === "") {
+            connectionUrl = config_1.default.get('dbUrl');
+        }
         client = yield mongodb_1.MongoClient.connect(connectionUrl);
         if (!client) {
             throw new Error('Could not establish Mongo connection');

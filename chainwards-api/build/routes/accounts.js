@@ -64,6 +64,20 @@ router.get('/findByWallet/:walletAddr', (req, res, next) => __awaiter(void 0, vo
         return next(err);
     }
 }));
+router.get('/', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        yield db_1.default.connect();
+        const allData = yield db_1.default
+            .collection('accounts')
+            .find({})
+            .toArray();
+        return res.json(allData);
+    }
+    catch (err) {
+        console.error(`Error: ${err}`);
+        return next(err);
+    }
+}));
 router.get('/authenticate/:walletAddr', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { walletAddr } = req.params;
@@ -79,7 +93,7 @@ router.get('/authenticate/:walletAddr', (req, res, next) => __awaiter(void 0, vo
         const tokenPayload = {
             userId: accountsData._id,
             displayname: accountsData.displayName,
-            walletAddress: accountsData.wallet.address
+            walletAddress: accountsData.wallet.address,
         };
         const options = {
             expiresIn: '1d',
