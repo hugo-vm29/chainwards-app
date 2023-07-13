@@ -39,7 +39,7 @@ app.use(express.urlencoded({ extended: true }));
 
 /**  routes  **/
 app.get("/", (req, res) => {
-  res.send("Server running !!");
+  res.send("Server running !!!");
 });
 
 app.use('/health-check', (req: Request, res: Response) => res.sendStatus(200));
