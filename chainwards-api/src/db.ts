@@ -5,11 +5,11 @@ let db: Db;
 let client: MongoClient;
 
 export default {
-  connect: async (connectionUrl: string = "") => {
+  connect: async (connectionUrl = '') => {
     if (db) return db;
     console.log('DB Connecting ...');
 
-    if(!connectionUrl || connectionUrl === ""){
+    if (!connectionUrl || connectionUrl === '') {
       connectionUrl = config.get<string>('dbUrl');
     }
 

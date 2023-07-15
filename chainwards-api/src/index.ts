@@ -12,7 +12,13 @@ const http = require('http');
 const app: Express = express();
 
 /** CORS setup **/
-const allowedDomains = [...config.get<string>('allowedDomains').split(',')];
+const getDomains = config.get<string>('allowedDomains');
+let allowedDomains: string[] = [];
+
+if (getDomains) {
+  const splitConfig = getDomains.split(',');
+  allowedDomains = [...splitConfig];
+}
 
 const corsOptions = {
   origin: function (
@@ -38,8 +44,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 /**  routes  **/
-app.get("/", (req, res) => {
-  res.send("Server running !!!");
+app.get('/', (req, res) => {
+  res.send('Server running !!!');
 });
 
 app.use('/health-check', (req: Request, res: Response) => res.sendStatus(200));
@@ -54,12 +60,10 @@ app.use('/merkle', merkleTreeRoutes);
 const PORT = 9092;
 
 try {
-  
-  app.listen(PORT, () => { 
+  app.listen(PORT, () => {
     console.log(`API running on port ${PORT}`);
   });
-
 } catch (err) {
-    console.error(err);
-    process.exit(1);
+  console.error(err);
+  process.exit(1);
 }
