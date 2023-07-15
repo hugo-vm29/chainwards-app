@@ -1,3 +1,6 @@
+const path = require("path")
+process.env['NODE_CONFIG_DIR'] = path.join(path.resolve("./"),"config/")
+
 import express, { Express, Request, Response } from 'express';
 import cors from 'cors';
 import config from 'config';
