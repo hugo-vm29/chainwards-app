@@ -50,6 +50,17 @@ app.get('/', (req, res) => {
   res.send('Server running !!!');
 });
 
+app.get('/config', (req, res) => {
+
+  const testVal = process.env.ALLOWED_DOMAINS;
+  
+  res.json({
+    result: testVal
+  });
+
+});
+
+
 app.use('/health-check', (req: Request, res: Response) => res.sendStatus(200));
 app.use('/collections', collectionRoutes);
 app.use('/accounts', accountsRoutes);
