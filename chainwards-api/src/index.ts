@@ -15,7 +15,7 @@ const app: Express = express();
 const getDomains = config.get<string>('allowedDomains');
 let allowedDomains: string[] = [];
 
-if (getDomains) {
+if (getDomains && getDomains !== "") {
   const splitConfig = getDomains.split(',');
   allowedDomains = [...splitConfig];
 }
