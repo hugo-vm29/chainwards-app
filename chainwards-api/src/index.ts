@@ -11,7 +11,6 @@ import merkleTreeRoutes from './routes/merkle';
 
 /* eslint-disable @typescript-eslint/no-var-requires */
 
-const http = require('http');
 const app: Express = express();
 
 /** CORS setup **/
