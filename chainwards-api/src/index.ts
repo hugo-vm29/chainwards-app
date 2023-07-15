@@ -1,19 +1,19 @@
-const path = require("path")
-process.env['NODE_CONFIG_DIR'] = path.join(path.resolve("./"),"config/")
-
 import express, { Express, Request, Response } from 'express';
 import cors from 'cors';
-import config from 'config';
+//import config from 'config';
 import collectionRoutes from './routes/collections';
 import accountsRoutes from './routes/accounts';
 import tokenRoutes from './routes/tokens';
 import merkleTreeRoutes from './routes/merkle';
 
+import dotenv from 'dotenv'
+dotenv.config()
+
 /* eslint-disable @typescript-eslint/no-var-requires */
 
 const app: Express = express();
 
-/** CORS setup **/
+/** CORS setup 
 const getDomains = config.get<string>('allowedDomains');
 let allowedDomains: string[] = [];
 
@@ -39,7 +39,7 @@ const corsOptions = {
   credentials: true,
 };
 
-app.use(cors(corsOptions));
+app.use(cors(corsOptions));**/
 
 /**  pre-route middleware **/
 app.use(express.json());
