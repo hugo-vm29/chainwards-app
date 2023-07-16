@@ -79,7 +79,7 @@ router.get('/authenticate/:walletAddr', (req, res, next) => __awaiter(void 0, vo
         const tokenPayload = {
             userId: accountsData._id,
             displayname: accountsData.displayName,
-            walletAddress: accountsData.wallet.address
+            walletAddress: accountsData.wallet.address,
         };
         const options = {
             expiresIn: '1d',

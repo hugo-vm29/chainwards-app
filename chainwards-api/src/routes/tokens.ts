@@ -1,6 +1,5 @@
 import express, { Request, Response } from 'express';
 import db from '../db';
-import config from 'config';
 import multer from 'multer';
 import { NFTStorage, File as NftFile } from 'nft.storage';
 import * as types from '../utils/types';
@@ -34,7 +33,7 @@ router.post(
     try {
       if (!req.file) return res.status(400).send({ error: 'Image is required' });
 
-      const storageServiceKey = config.get<string>('nft_storage_key');
+      const storageServiceKey = process.env.NFT_STORAGE_TOKEN;
 
       if (!storageServiceKey)
         return res

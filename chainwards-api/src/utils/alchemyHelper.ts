@@ -1,17 +1,16 @@
 import { Network, Alchemy } from 'alchemy-sdk';
-import config from 'config';
 
 const getAlchemySettings = (chainId: number) => {
   let settings;
 
   if (chainId == 5) {
     settings = {
-      apiKey: config.get<string>('goerli_api_key'),
+      apiKey: process.env.GOERLI_API_KEY || '',
       network: Network.ETH_GOERLI,
     };
   } else if (chainId == 80001) {
     settings = {
-      apiKey: config.get<string>('mumbai_api_key'),
+      apiKey: process.env.MUMBAI_API_KEY || '',
       network: Network.MATIC_MUMBAI,
     };
   }
@@ -24,6 +23,9 @@ export const getTokensForOwner = async (
   distinctContracts: string[],
 ) => {
   const settings = getAlchemySettings(chainId);
+
+  if (settings?.apiKey === '') throw new Error('Missing keys for node provider');
+
   const alchemy = new Alchemy(settings);
 
   const nftsForOwner = await alchemy.nft.getNftsForOwner(walletAddress, {

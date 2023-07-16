@@ -1,13 +1,15 @@
 import server from './app';
 import db from './db';
-import config from 'config';
 
 const port = 8080;
 
 async function main() {
   try {
     // setup DB
-    const mongoUrl = config.get<string>('dbUrl');
+    const mongoUrl = process.env.MONGO_URL;
+
+    if (!mongoUrl) throw new Error('Missing DB url');
+
     await db.connect(mongoUrl);
 
     server.listen(port);

@@ -1,4 +1,3 @@
-import config from 'config';
 import { ethers } from 'ethers';
 import { MerkleTree } from 'merkletreejs';
 import { RPC_ENDPOINTS } from './constants';
@@ -34,9 +33,9 @@ const getNetworkApiKey = (chainId: number) => {
   let apiKey = '';
 
   if (chainId == 5) {
-    apiKey = config.get<string>('goerli_api_key');
+    apiKey = process.env.GOERLI_API_KEY || '';
   } else if (chainId == 80001) {
-    apiKey = config.get<string>('mumbai_api_key');
+    apiKey = process.env.MUMBAI_API_KEY || '';
   }
   return apiKey;
 };

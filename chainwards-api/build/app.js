@@ -5,16 +5,21 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
-const config_1 = __importDefault(require("config"));
 const collections_1 = __importDefault(require("./routes/collections"));
 const accounts_1 = __importDefault(require("./routes/accounts"));
 const tokens_1 = __importDefault(require("./routes/tokens"));
 const merkle_1 = __importDefault(require("./routes/merkle"));
+const dotenv_1 = __importDefault(require("dotenv"));
+dotenv_1.default.config();
 /* eslint-disable @typescript-eslint/no-var-requires */
 const http = require('http');
 const app = (0, express_1.default)();
 /** CORS setup **/
-const allowedDomains = [...config_1.default.get('allowedDomains').split(',')];
+const configDomains = process.env.ALLOWED_DOMAINS;
+let allowedDomains = [];
+if (configDomains && configDomains !== '') {
+    allowedDomains = [...configDomains.split(',')];
+}
 const corsOptions = {
     origin: function (requestOrigin, callback) {
         if (!requestOrigin ||

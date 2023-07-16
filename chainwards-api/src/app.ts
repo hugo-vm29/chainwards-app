@@ -1,10 +1,12 @@
 import express, { Express, Request, Response } from 'express';
 import cors from 'cors';
-import config from 'config';
 import collectionRoutes from './routes/collections';
 import accountsRoutes from './routes/accounts';
 import tokenRoutes from './routes/tokens';
 import merkleTreeRoutes from './routes/merkle';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 /* eslint-disable @typescript-eslint/no-var-requires */
 
@@ -12,7 +14,12 @@ const http = require('http');
 const app: Express = express();
 
 /** CORS setup **/
-const allowedDomains = [...config.get<string>('allowedDomains').split(',')];
+const configDomains = process.env.ALLOWED_DOMAINS;
+let allowedDomains: string[] = [];
+
+if (configDomains && configDomains !== '') {
+  allowedDomains = [...configDomains.split(',')];
+}
 
 const corsOptions = {
   origin: function (
@@ -38,6 +45,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 /**  routes  **/
+
 app.use('/health-check', (req: Request, res: Response) => res.sendStatus(200));
 app.use('/collections', collectionRoutes);
 app.use('/accounts', accountsRoutes);

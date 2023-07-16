@@ -14,7 +14,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const db_1 = __importDefault(require("../db"));
-const config_1 = __importDefault(require("config"));
 const multer_1 = __importDefault(require("multer"));
 const nft_storage_1 = require("nft.storage");
 const dappUtils_1 = require("../utils/dappUtils");
@@ -31,7 +30,7 @@ router.post('/metadata/upload', upload.single('file'), (req, res, next) => __awa
     try {
         if (!req.file)
             return res.status(400).send({ error: 'Image is required' });
-        const storageServiceKey = config_1.default.get('nft_storage_key');
+        const storageServiceKey = process.env.NFT_STORAGE_TOKEN;
         if (!storageServiceKey)
             return res
                 .status(500)

@@ -8,12 +8,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getMerkleProof = exports.getMerkleRoot = exports.validateAdressArray = exports.stringToAdressArray = exports.validateAddress = exports.getContractWithWallet = exports.getTransactionReceipt = exports.getRpcEndpoint = exports.setProvider = exports.createWallet = void 0;
-const config_1 = __importDefault(require("config"));
 const ethers_1 = require("ethers");
 const merkletreejs_1 = require("merkletreejs");
 const constants_1 = require("./constants");
@@ -43,10 +39,10 @@ const getNetworkUrl = (chainId) => {
 const getNetworkApiKey = (chainId) => {
     let apiKey = '';
     if (chainId == 5) {
-        apiKey = config_1.default.get('goerli_api_key');
+        apiKey = process.env.GOERLI_API_KEY || '';
     }
     else if (chainId == 80001) {
-        apiKey = config_1.default.get('mumbai_api_key');
+        apiKey = process.env.MUMBAI_API_KEY || '';
     }
     return apiKey;
 };
