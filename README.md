@@ -12,7 +12,7 @@ As admin and owner of a collection you can also give permissions to other admins
 
 Beside the above, the application also allows the "claimers" to claim (mint) all the assigned NFTs. The application also offers a simple gallery page for the users to see all the tokens they have claimed in the past for all the collections.
 
-## About the use of Blockchain
+## Blockchain integration
 
 This application uses the standard ERC-1155 for the NFTs implementation. Also each collection created from the UI is managed by an invidual smart contract deployed to the blockchain.
 
@@ -25,6 +25,8 @@ For the whitelist feature mentioned on the previous section (predefined claimers
 Next, for excuting the mint function a merkle proof for the specific token ID and target address have to be provided for the smart contract to verify it. Only if the proof results succesfull then the minting is allowed.
 
 The contract code base is located under `solidity/contracts`.
+
+Supported netwoks: `Polygon Mumbai`, `Goerli`.
 
 ## Using the application
 
