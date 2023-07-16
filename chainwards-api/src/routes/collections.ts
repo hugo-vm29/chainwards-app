@@ -201,7 +201,7 @@ router.get('/findByWallet/:pubKey', async (req: Request, res: Response, next) =>
       {
         $match: {
           $or: [{ owner: pubKey }, { issuers: { $in: [pubKey] } }],
-          status: 'active',
+          //status: 'active',
         },
       },
       ...getCollectionPipeline(),

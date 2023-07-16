@@ -21,7 +21,7 @@ function main() {
             // setup DB
             const mongoUrl = process.env.MONGO_URL;
             if (!mongoUrl)
-                throw new Error("Missing DB url");
+                throw new Error('Missing DB url');
             yield db_1.default.connect(mongoUrl);
             app_1.default.listen(port);
             console.log(`Server is listening on port ${port}`);

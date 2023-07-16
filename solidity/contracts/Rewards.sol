@@ -204,7 +204,7 @@ contract Rewards is ERC1155, AccessControl, ERC1155URIStorage {
         uint256 newTokenId = _tokenIds.current();
         
         _setURI(newTokenId, tokenURI);
-        _mint( address(this) , newTokenId , 1, "");
+        _mint( msg.sender , newTokenId , 1, "");
 
         ListedToken storage newListedToken = _listedTokens[newTokenId];
         newListedToken.tokenId = newTokenId;

@@ -66,7 +66,8 @@ const DetailsCard = ({ collection, loadingPage }: DetailsCardProps) => {
                   (collection.symbol !== '' ? ` (${collection.symbol})` : '')}
               </Typography>
 
-              {userWallet === collection.owner && (
+              {userWallet.toLocaleLowerCase() ===
+                collection.owner.toLocaleLowerCase() && (
                 <AdminActions
                   collectionId={collection._id}
                   contractAddress={collection.contractAddress}

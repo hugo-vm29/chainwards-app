@@ -59,7 +59,7 @@ const PageLayout: FunctionComponent<PageLayoutRouteProps> = ({ children }) => {
   const isAdminLoggedIn = useRegisteredAccount(true);
 
   const findSelected = () => {
-    if (pathname.includes('/collections')) {
+    if (pathname.includes('/collections') || pathname.includes('/collection')) {
       return 0;
     }
     if (pathname.includes('/claim')) {

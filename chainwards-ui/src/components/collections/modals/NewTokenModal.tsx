@@ -101,7 +101,7 @@ const NewTokenModal: FunctionComponent<NewTokenModalProps> = ({
   const onSubmitForm = async (formValues: NewTokenFormValues) => {
     try {
       setSubmittingData(true);
-      //console.log("formValues", formValues);
+
       const signer: any = await getRpcSigner();
 
       if (!signer) throw new Error('Unable to get signer account');
@@ -223,7 +223,7 @@ const NewTokenModal: FunctionComponent<NewTokenModalProps> = ({
           disabled: submittingData,
         },
         {
-          name: 'Create Collection',
+          name: 'Create NFT',
           color: 'primary',
           variant: 'contained',
           position: 'right',

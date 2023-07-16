@@ -173,7 +173,7 @@ router.get('/findByWallet/:pubKey', (req, res, next) => __awaiter(void 0, void 0
             {
                 $match: {
                     $or: [{ owner: pubKey }, { issuers: { $in: [pubKey] } }],
-                    status: 'active',
+                    //status: 'active',
                 },
             },
             ...(0, dbHelper_1.getCollectionPipeline)(),
