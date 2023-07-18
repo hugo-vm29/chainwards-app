@@ -36,6 +36,8 @@ To use the application as an admin (for creating collections) the application wi
 
 To claim or view your NFT collection you should have the wallet address you are planning to use already added to Metamask as well.
 
+Demo videos are available in the `/demo_videos` folder.
+
 ## Running the application
 
 Prerequisites:
