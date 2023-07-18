@@ -14,19 +14,19 @@ Beside the above, the application also allows the "claimers" to claim (mint) all
 
 ## Blockchain integration
 
-This application uses the standard ERC-1155 for the NFTs implementation. Also each collection created from the UI is managed by an invidual smart contract deployed to the blockchain.
+This application uses the standard ERC-1155 for the NFTs implementation. Also each collection created from the UI is managed by an individual smart contract deployed to the blockchain.
 
-The owner of the contract (account who deploys it) will have the highest priviliges when interacting with the contract. Other roles such as ISSUER can be granted to other accounts by the owner to allow certain actions/interactions with the contract.
+The owner of the contract (account who deploys it) will have the highest privileges when interacting with the contract. Other roles such as ISSUER can be granted to other accounts by the owner to allow certain actions/interactions with the contract.
 
 After deploying a contract to represent a collection the next step is to list (create) tokens for such contract. Only listed tokens are considered available for minting.
 
 For the whitelist feature mentioned on the previous section (predefined claimers) the smart contract uses merkle trees and merkle proofs to verify that the target account is allowed to mint the corresponding token. For listing a token on the smart contract the sender account (which is either the contract owner or an authorized issuer) needs to define a merkle tree root that will be associated to the corresponding token ID of that new token.
 
-Next, for excuting the mint function a merkle proof for the specific token ID and target address have to be provided for the smart contract to verify it. Only if the proof results succesfull then the minting is allowed.
+Next, for executing the mint function a merkle proof for the specific token ID and target address have to be provided for the smart contract to verify it. Only if the proof results successful then the minting is allowed.
 
 The contract code base is located under `solidity/contracts`.
 
-Supported netwoks: `Polygon Mumbai`, `Goerli`.
+Supported networks: `Polygon Mumbai`, `Goerli`.
 
 ## Using the application
 
