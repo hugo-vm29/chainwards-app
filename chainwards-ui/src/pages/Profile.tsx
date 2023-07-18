@@ -95,6 +95,8 @@ const MyProfile = () => {
         [],
       );
 
+      console.log('completeData', completeData);
+
       setTokensList(completeData);
       setLoadingData(false);
     } catch (err: any) {
@@ -151,24 +153,26 @@ const MyProfile = () => {
                   <Card key={index} elevation={0} sx={{ border: '1px solid #968572' }}>
                     <ImageListItem>
                       <img
-                        src={`${BASE_METADATA_URI}${item.imageUrl}?w=164&h=164&fit=crop&auto=format`}
+                        src={`${BASE_METADATA_URI}${item.imageUrl}?w=100%&fit=crop&auto=format`}
                         alt={item.tokeName}
                         loading="lazy"
-                        style={{ padding: 16 }}
+                        style={{ padding: 16, alignSelf: 'center', maxWidth: 300 }}
                       />
                       <Stack direction="column" sx={{ px: 2 }}>
                         <Box sx={{ flexGrow: 1 }}>
-                          <Tooltip
-                            title={
-                              item.collectionName.length > 20 ? item.collectionName : ''
-                            }
-                            arrow
-                            placement="top"
-                          >
-                            <Typography component="h6" sx={styles.collectionTitle}>
-                              {formatLongName(item.collectionName)}
-                            </Typography>
-                          </Tooltip>
+                          {item?.collectionName && (
+                            <Tooltip
+                              title={
+                                item.collectionName.length > 20 ? item.collectionName : ''
+                              }
+                              arrow
+                              placement="top"
+                            >
+                              <Typography component="h6" sx={styles.collectionTitle}>
+                                {formatLongName(item.collectionName)}
+                              </Typography>
+                            </Tooltip>
+                          )}
                         </Box>
 
                         <Box sx={{}}>

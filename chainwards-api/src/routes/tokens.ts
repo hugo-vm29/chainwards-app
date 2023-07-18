@@ -450,8 +450,6 @@ router.get('/history/redemptions/:pubKey', async (req: Request, res: Response, n
       .aggregate(qryPipeline)
       .toArray();
 
-    //console.log("dbReponse", dbReponse);
-
     if (dbReponse.length == 0) return res.json([]);
 
     const promises = dbReponse.map(async (item: any) => {
@@ -468,8 +466,8 @@ router.get('/history/redemptions/:pubKey', async (req: Request, res: Response, n
         return {
           tokenId: tokenItem.tokenId,
           tokeName: tokenItem.title,
-          collectionName: tokenItem.contract.name,
-          contractAddress: tokenItem.contract.address,
+          collectionName: tokenItem?.contract?.name || '',
+          contractAddress: tokenItem?.contract?.address || '',
           chainId: item._id,
           imageUrl: tokenItem.rawMetadata?.image?.replace('ipfs://', '') || '',
         };
@@ -483,7 +481,7 @@ router.get('/history/redemptions/:pubKey', async (req: Request, res: Response, n
     });
 
     const finalResponse = await Promise.all(promises);
-    //console.log(finalResponse);
+
     return res.json(finalResponse);
   } catch (err: any) {
     console.error(`Error (${routeName}): ${err}`);
