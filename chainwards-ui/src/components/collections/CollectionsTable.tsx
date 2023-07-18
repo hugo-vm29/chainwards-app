@@ -92,7 +92,7 @@ const CollectionsTable = ({
       label: 'Collection Name',
       options: {
         customBodyRender: (value: string, tableMeta: any) => {
-          const status: string = tableMeta.rowData[4];
+          const status: string = tableMeta.rowData[5];
           const collectionId: string = tableMeta.rowData[6];
           return (
             <>

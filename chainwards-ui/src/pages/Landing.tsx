@@ -152,7 +152,7 @@ const Landing = () => {
                   No account is needed to claim a token. An account is required to create
                   collections only.
                 </Typography>
-                <Typography variant="body2">{`TESTING: ${userWallet}`}</Typography>
+                {/* <Typography variant="body2">{`TESTING: ${userWallet}`}</Typography> */}
               </Box>
 
               <Box

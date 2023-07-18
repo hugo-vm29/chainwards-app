@@ -35,8 +35,6 @@ router.post('/', async (req: Request, res: Response, next) => {
 
     const dbResponse = await db.collection('accounts').insertOne(newUser);
 
-    console.log('newUser', newUser);
-
     return res.json({
       id: dbResponse.insertedId,
       displayName: username,

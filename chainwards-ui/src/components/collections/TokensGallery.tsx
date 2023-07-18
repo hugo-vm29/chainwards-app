@@ -294,7 +294,7 @@ const TokensGallery = ({
                       />
                     </Grid>
 
-                    <Grid item md={6}>
+                    <Grid item md={5}>
                       <Box display="flex" flexDirection="column" sx={{ px: 3 }}>
                         <Typography variant="h6" flexGrow="1" sx={{ mb: 2 }}>
                           {selectedToken.name}
@@ -349,7 +349,7 @@ const TokensGallery = ({
                       </Box>
                     </Grid>
 
-                    <Grid item md={2}>
+                    <Grid item md={3}>
                       <Box display="flex" flexDirection="column">
                         <Box display="flex" flexDirection="row" sx={{ mb: 1 }}>
                           <Button
@@ -425,8 +425,10 @@ const TokensGallery = ({
         submitCallback={onChangeClaimers}
         canModify={
           selectedToken
-            ? selectedToken.issuer === collectionOwner || userWallet == collectionOwner
-            : true
+            ? selectedToken.issuer.toLocaleLowerCase() ===
+                collectionOwner.toLocaleLowerCase() ||
+              userWallet.toLocaleLowerCase() == collectionOwner.toLocaleLowerCase()
+            : false
         }
       />
 
